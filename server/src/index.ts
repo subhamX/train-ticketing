@@ -1,8 +1,9 @@
 import Express from 'express';
-import db from './db/index';
+import trainRoutes from './routes/trains';
 
 const app = Express();
 
+app.use('/trains/', trainRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello World');
