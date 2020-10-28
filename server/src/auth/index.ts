@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import bodyParser from 'body-parser'
 import db from '../db/index'
 import * as dotenv from 'dotenv'
 import * as bcrypt from 'bcrypt'
@@ -7,7 +6,6 @@ import { setTokenIntoCookies, verifyToken } from './helper'
 
 dotenv.config()
 const app = Router()
-app.use(bodyParser.json())
 
 app.get('/status', verifyToken, (req, res) => {
     res.json({
