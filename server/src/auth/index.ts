@@ -82,7 +82,7 @@ app.post("/logout", async (req, res) => {
   if (!token) {
     res.send({
       error: true,
-      message: "Access Denied!",
+      message: "No Access Token found!",
     });
   }
   try {
