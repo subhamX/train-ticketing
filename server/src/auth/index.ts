@@ -1,10 +1,9 @@
-master
-import { Router } from "express";
-import bodyParser from "body-parser";
-import db from "../db/index";
-import * as dotenv from "dotenv";
-import * as bcrypt from "bcrypt";
-import { setTokenIntoCookies, verifyToken } from "./helper";
+import { Router } from 'express'
+import bodyParser from 'body-parser'
+import db from '../db/index'
+import * as dotenv from 'dotenv'
+import * as bcrypt from 'bcrypt'
+import { setTokenIntoCookies, verifyToken } from './helper'
 
 dotenv.config()
 const app = Router()
@@ -79,26 +78,26 @@ app.post('/login/', async (req, res) => {
 })
 
 // ## logout
-app.post("/logout", async (req, res) => {
-  const token = req.cookies.auth_token;
-  if (!token) {
-    res.send({
-      error: true,
-      message: "No Access Token found!",
-    });
-  }
-  try {
-    await db.query(
-      `UPDATE users SET current_token = NULL WHERE current_token = $1`,
-      [token]
-    );
-    res.send({ success: "Logged out successfully!" });
-  } catch (err) {
-    res.send({
-      error: true,
-      message: err.message,
-    });
-  }
-});
+app.post('/logout', async (req, res) => {
+    const token = req.cookies.auth_token
+    if (!token) {
+        res.send({
+            error: true,
+            message: 'No Access Token found!',
+        })
+    }
+    try {
+        await db.query(
+            `UPDATE users SET current_token = NULL WHERE current_token = $1`,
+            [token]
+        )
+        res.send({ success: 'Logged out successfully!' })
+    } catch (err) {
+        res.send({
+            error: true,
+            message: err.message,
+        })
+    }
+})
 
 export default app
