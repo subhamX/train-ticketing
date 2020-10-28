@@ -1,0 +1,26 @@
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+    "user_name": "bharat",
+    "first_name": "Bharat",
+    "last_name": "Ladrecha",
+    "email": "bharat@gmail.com",
+    "admin": true,
+    "password": "abc123"
+}
+
+#####
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "user_name": "bharat",
+    "password": "abc123",
+    "admin": true
+}
+
+
+#####
+GET http://localhost:3000/user/ 

@@ -1,9 +1,13 @@
 import Express from 'express';
 import trainRoutes from './routes/trains';
+import authRoutes from './auth';
+import userRoutes from './routes/user';
 
 const app = Express();
 
 app.use('/trains/', trainRoutes);
+app.use('/auth/', authRoutes);
+app.use('/user', userRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello World');
