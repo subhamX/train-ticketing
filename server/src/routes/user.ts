@@ -1,8 +1,6 @@
-import { Router } from "express";
-import { verifyToken } from "../auth/helper";
+import { Router } from 'express'
+import { verifyToken } from '../auth/helper'
 
-const app = Router();
+const app = Router()
 
-
-
-export default app;
+export default app
