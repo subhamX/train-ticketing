@@ -13,7 +13,7 @@ app.get('/list/', async (req, res) => {
             "count": data.rowCount
         });
     } catch (err) {
-        res.send({ "error": true, "message": "Couldn't retieve the trains list" });
+        res.send({ "error": true, "message": "Couldn't retieve the trains list" , 'err': err.message});
     }
 });
 
