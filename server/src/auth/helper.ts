@@ -50,7 +50,7 @@ export const verifyToken = async (req: Request, res: Response, next: any) => {
     if (!token) {
         return res.send({
             error: true,
-            message: 'Access Denied!',
+            message: 'Access Denied! No token found',
         })
     }
 
@@ -101,5 +101,25 @@ export const verifyToken = async (req: Request, res: Response, next: any) => {
                 message: err.message,
             })
         }
+    }
+}
+
+
+export const verifyAdmin = async (req: Request, res: Response, next: any) => {
+    try{
+        let response = await db.query('SELECT is_admin FROM users where username=$1', [res.locals.username]);
+        if(response.rowCount===0 || response.rows[0]['is_admin']==false){
+            return res.send({
+                error: true,
+                message: 'Access Denied. Please authenticate with admin credentials.'
+            })
+        }else{
+            return next();
+        }
+    }catch(err){
+        return res.send({
+            error: true,
+            message: err.message,
+        })
     }
 }
