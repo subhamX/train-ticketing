@@ -6,6 +6,8 @@ import trainRoutes from './routes/trains';
 import authRoutes from './auth/index';
 import userRoutes from './routes/user';
 import adminRoutes from './routes/admin';
+import coachesRoute from './routes/coaches';
+
 
 import ticketRoutes from './routes/tickets';
 
@@ -16,6 +18,7 @@ app.use(bodyParser.json())
 app.use('/tickets/', ticketRoutes)
 app.use('/trains/', trainRoutes);
 app.use('/auth/', authRoutes);
+app.use('/coaches/', coachesRoute);
 app.use('/user/', userRoutes);
 app.use('/admin/', adminRoutes);
 
