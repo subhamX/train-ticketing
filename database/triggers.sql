@@ -156,6 +156,10 @@ begin
             primary key(berth_number)
         )', coach_composition_table_name);
 
+        UPDATE coaches
+        SET composition_table=coach_composition_table_name
+        where coach_id=NEW.coach_id;
+
         raise info 'Binding trigger to %', coach_composition_table_name;
         -- Binding Trigger
         execute format('create trigger alter_coach_instance_trigger
@@ -170,7 +174,7 @@ end
 $$
 
 create trigger new_coach_instance_trigger
-    before insert or update on coaches
+    before insert on coaches
     for each row
     execute procedure on_coaches_insert();
 
