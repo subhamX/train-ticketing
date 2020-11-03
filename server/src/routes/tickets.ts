@@ -1,10 +1,10 @@
 import { Router } from 'express'
+import { bookTicketInstanceSchema } from '../schema/validators';
 import { verifyToken } from '../auth/helper'
 import db from '../db/index'
 
 const app = Router();
 
-const PREFIX = 'train';
 
 interface Passenger {
     passenger_age: Number;
@@ -15,10 +15,13 @@ interface Passenger {
     seat_preference: String;
 }
 
-// helper function to build the train_table_name
-function getTrainTableName(train_number: Number, journey_date: Date) {
-    let date = journey_date.getDate(), month = journey_date.getMonth() + 1, year = journey_date.getFullYear();
-    return `${PREFIX}_${train_number}_${date}${month}${year}`;
+interface TicketInstance {
+    ticket_fare: Number;
+    journey_date: Date;
+    train_number: String;
+    transaction_number: String;
+    type: String;
+    passengers: Passenger[];
 }
 
 function generatePassengerString(passengers: Passenger[]) {
@@ -45,7 +48,6 @@ function generatePassengerString(passengers: Passenger[]) {
             passengerString += `,NULL`;
         }
         passengerString += `)::passenger`;
-
         finalString += passengerString
         if (index !== passengers.length - 1) {
             finalString += ', ';
@@ -56,19 +58,31 @@ function generatePassengerString(passengers: Passenger[]) {
 }
 
 
+
 // route to book ticket
 app.post('/book', verifyToken, async (req, res) => {
     try {
-        let { ticket_fare, train_number, transaction_number, type } = req.body;
-        let passengers: Passenger[] = req.body.passengers;
-        let journey_date_milliseconds = Date.parse(req.body.journey_date);
-
+        let instance: TicketInstance = req.body;
         let username = res.locals.username;
-        let journey_date = new Date(journey_date_milliseconds);
-        // TODO: validate all including all passengers
+
+        let result = bookTicketInstanceSchema.validate(instance);
+        if (result.error !== undefined) {
+            throw Error(result.error?.details[0].message);
+        }
+
+        instance.type = instance.type.toUpperCase();
+        if (instance.type === 'SLEEPER') {
+            instance.type = 'S';
+        } else if (instance.type === 'AC') {
+            instance.type = 'A';
+        }
+
+        if (instance.type !== 'A' && instance.type !== 'S') {
+            throw Error(`Invalid Coach Type: ${instance.type}`);
+        }
 
         let method = 0;
-        let passengerPayload = generatePassengerString(passengers);
+        let passengerPayload = generatePassengerString(instance.passengers);
         let response = await db.query(`call book_tickets(passengers=>array[${passengerPayload}],
             train_number=>$1,
             journey_date=>$2,
@@ -78,12 +92,11 @@ app.post('/book', verifyToken, async (req, res) => {
             method=>$6,
             type=>$7
         )`,
-            [train_number, journey_date, username, transaction_number, ticket_fare, method, type]);
+            [instance.train_number, instance.journey_date, username, instance.transaction_number, instance.ticket_fare, method, instance.type]);
         res.send({
             error: false,
             response: response.rows,
         })
-
     } catch (err) {
         res.send({ error: true, message: err.message })
     }
