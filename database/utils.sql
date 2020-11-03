@@ -43,8 +43,8 @@ $$;
 
 
 
-create or replace function get_train_name(
-	IN train_table_name_PREFIX varchar(100),
+create or replace function get_train_table_name(
+	IN train_table_name_PREFIX text,
 	IN train_number varchar(100),
 	IN journey_date date,
 	OUT train_table_name varchar(200)

@@ -1,6 +1,21 @@
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'passenger') THEN
+		create type passenger as (passenger_name text, 
+		passenger_age int, 
+		passenger_gender char, 
+		seat_number int, 
+		coach_number text, 
+		seat_pref text);
+    END IF;
+END$$;
+
+
+
+
 create or replace procedure book_tickets(
 	INOUT passengers passenger[],
- 	INOUT train_number int,	
+ 	INOUT train_number text,	
 	INOUT journey_date date,
 	IN username text,
 	-- A for AC and S for sleeper
@@ -9,7 +24,7 @@ create or replace procedure book_tickets(
 	INOUT ticket_fare numeric(50, 5),
 	-- 0 -> Book with no pref
 	-- 1 -> Book with preference:seat type
-	-- 2 -> Book with coach_id and seat_number
+	-- 2 -> Book with coach_number and seat_number
 	INOUT method integer default 0, 
 	INOUT pnr_number varchar(20) default null
 )
@@ -49,7 +64,7 @@ begin
 	
 	pnr_number=ticket_details.pnr_number;
 
-	select get_train_table_name('train_', '100', '10.12.2020')
+	select get_train_table_name('train_'::text, train_number, journey_date)
 	into train_table_name;
 
     if type NOT IN ('A', 'S') then

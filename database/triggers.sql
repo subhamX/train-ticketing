@@ -30,7 +30,7 @@ begin
             pnr_number varchar(10),
             passenger_name varchar(100),
             passenger_age int,
-            passenger_gender char
+            passenger_gender char,
             primary key(
                 seat_number, coach_number
             )

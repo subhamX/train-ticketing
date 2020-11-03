@@ -62,7 +62,7 @@ CREATE TABLE "tickets" (
     "ticket_fare" decimal   NOT NULL,
     "train_number" varchar(6)   NOT NULL,
     "username" varchar(30)   NOT NULL,
-    "transaction_number" int   NOT NULL,
+    "transaction_number" varchar(300)   NOT NULL,
     "time_of_booking" timestamptz   NOT NULL DEFAULT NOW(),
     CONSTRAINT "pk_tickets" PRIMARY KEY (
         "pnr_number"
