@@ -57,6 +57,23 @@ function generatePassengerString(passengers: Passenger[]) {
     return finalString;
 }
 
+function beautifyPassengersOutput(passengersRaw: String) {
+    let passengers: Passenger[] = [];
+    let arr = passengersRaw.replace('{\"', '').replace('\"}', '').split('","')
+    arr.forEach(e => {
+        let instance = e.replace('(', '').replace(')', '').split(',');
+        let passenger: Passenger = {
+            passenger_age: parseInt(instance[1]),
+            passenger_name: instance[0],
+            passenger_gender: instance[2],
+            seat_number: parseInt(instance[3]),
+            coach_id: instance[4],
+            seat_preference: instance[5]
+        };
+        passengers.push(passenger);
+    });
+    return passengers;
+}
 
 
 // route to book ticket
@@ -93,9 +110,14 @@ app.post('/book', verifyToken, async (req, res) => {
             type=>$7
         )`,
             [instance.train_number, instance.journey_date, username, instance.transaction_number, instance.ticket_fare, method, instance.type]);
+
+        let { passengers, ...meta } = response.rows[0];
         res.send({
             error: false,
-            response: response.rows,
+            response: {
+                meta,
+                passengers: beautifyPassengersOutput(response.rows[0].passengers)
+            },
         })
     } catch (err) {
         res.send({ error: true, message: err.message })
