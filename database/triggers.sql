@@ -171,6 +171,8 @@ begin
             for each row
             execute procedure on_coach_composition_change();
         ', coach_composition_table_name);
+
+        NEW.composition_table=coach_composition_table_name;
     end if;
 	
 	return NEW;
