@@ -384,3 +384,4 @@ create trigger train_instance_update_trigger
     before update on train_instance
     for each row
     execute procedure handle_on_train_instance_update();
+
