@@ -37,6 +37,10 @@ begin
         )', train_table_name
     );
 
+    execute format('ALTER TABLE %I 
+        ADD FOREIGN KEY("pnr_number")
+        REFERENCES "tickets" ("pnr_number")', train_table_name);
+
     ac_coach_id=NEW.ac_coach_id;
     sleeper_coach_id=NEW.sleeper_coach_id;
     number_of_ac_coaches=NEW.number_of_ac_coaches;
@@ -171,7 +175,7 @@ begin
 	
 	return NEW;
 end
-$$
+$$;
 
 create trigger new_coach_instance_trigger
     before insert on coaches
@@ -266,11 +270,11 @@ begin
 end
 $$;
 
-
-create trigger alter_coach_instance_trigger
-	before insert or delete on <<COACH_COMPOSITION_TABLE_NAME>>
-	for each row
-	execute procedure on_coach_composition_change();
+-- * Dynamically binded with the composition table by trigger 2
+-- create trigger alter_coach_instance_trigger
+-- 	before insert or delete on <<COACH_COMPOSITION_TABLE_NAME>>
+-- 	for each row
+-- 	execute procedure on_coach_composition_change();
 	
 
 
