@@ -45,4 +45,27 @@ app.get('/info/:train_number', async (req, res) => {
     }
 })
 
+
+app.get('/current/active', async (req, res) => {
+    try {
+        let data = await db.query(
+            `SELECT * FROM train_instance WHERE booking_end_time > $1 AND booking_start_time <= $1`,
+            [new Date()]
+        )
+        if (data.rowCount === 0) {
+            res.send({
+                error: true,
+                message: `No trains available for booking`,
+            })
+        }
+        res.send({
+            error: false,
+            count: data.rowCount,
+            data: data.rows,
+        })
+    } catch (err) {
+        res.send({ error: true, message: err.message })
+    }
+})
+
 export default app
