@@ -1,7 +1,7 @@
 import Express, { Request, Response } from 'express';
 import cookie_parser from 'cookie-parser';
 import bodyParser from 'body-parser';
-
+import session from 'express-session';
 import trainRoutes from './routes/trains';
 import authRoutes from './auth/index';
 import userRoutes from './routes/user';
@@ -10,10 +10,31 @@ import coachesRoute from './routes/coaches';
 
 
 import ticketRoutes from './routes/tickets';
-
+import passport from 'passport';
+import cors from 'cors';
 const app = Express()
+
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL as string,
+        credentials: true,
+    })
+);
+
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET as string,
+        resave: true,
+        saveUninitialized: false,
+    })
+);
 app.use(cookie_parser())
 app.use(bodyParser.json())
+require("./auth/passportConfig")(passport);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use('/tickets/', ticketRoutes)
 app.use('/trains/', trainRoutes);
@@ -22,8 +43,8 @@ app.use('/coaches/', coachesRoute);
 app.use('/user/', userRoutes);
 app.use('/admin/', adminRoutes);
 
-
 app.get('/', (req: Request, res: Response) => {
+
     res.send({
         'status': 200,
         'error': false
