@@ -1,19 +1,16 @@
-import Axios from "axios";
 
-export async function loginFunc(username: String, password: String) {
-  const config: Object = {
-    method: "POST",
-    url: "http://localhost:8000/auth/login/",
-    withCredentials: true,
-    data: {
-      username: username,
-      password: password,
-    },
-  };
-  let res = await Axios(config);
-  console.log(res);
-  if (res.status === 200) {
-    return true;
-  }
-  return false;
-}
+import axios from 'axios';
+
+const url = process.env.REACT_APP_SERVER_URL;
+
+export const getUserData = () => axios.get(`${url}/users/profile/`, { withCredentials: true });
+
+export const sendLogOutSignal = () => axios.post(`${url}/auth/logout/`, {}, { withCredentials: true });
+
+export const registerUser = (payload: any) => axios.post(
+    `${process.env.REACT_APP_SERVER_URL}/auth/register`,
+    payload,
+    {
+        withCredentials: true,
+    }
+)

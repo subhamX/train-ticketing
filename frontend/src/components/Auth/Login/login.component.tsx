@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { loginFunc } from "../../../services/api";
+// import { loginFunc } from "../../../services/api";
 
 interface IUserName {
   username: String;
@@ -9,7 +9,7 @@ interface IPassword {
 }
 
 const onClickHandler = (username: IUserName, password: IPassword) => {
-  let res = loginFunc(username.username, password.password);
+  // let res = loginFunc(username.username, password.password);
 };
 
 function Login() {
