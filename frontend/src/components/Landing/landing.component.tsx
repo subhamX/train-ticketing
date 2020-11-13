@@ -1,32 +1,36 @@
-import { Button } from "antd";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { logoutUser } from "../../services/actions/auth";
+import { Content } from "antd/lib/layout/layout";
+import React, { useState } from "react";
+import Head from "../Head/head.component";
 import "./landing.component.css";
+import SubwaySvg from "../../assets/images/subway.svg";
+import TravelTogetherSvg from "../../assets/images/travel_together.svg";
+import { Button } from "antd";
+import { Link } from "react-router-dom";
 
 function AppView() {
-  const user = useSelector((state: any) => state.authReducer.user);
-  const dispatch = useDispatch();
-
   return (
     <div>
-      <h1>Welcome onboard!</h1>
-      <h2>
-        {user
-          ? `User ${user.username} is authenticated`
-          : `User not authenticated`}
-      </h2>
-
-      {/* Performing conditional check */}
-      {user ? (
-        <Button onClick={() => dispatch(logoutUser())}>Logout</Button>
-      ) : (
-        <div>
-          <Link to="/auth/login/">Login</Link>
-          <Link to="/auth/register/">Register</Link>{" "}
+      <Head />
+      <Content className="wrapper">
+        {/* <img src={SubwaySvg} /> */}
+        <div className="info-wrapper">
+          <div className="catchy">Let's travel with safety!</div>
+          <div className="keypoints">
+            <p className="point">Choose which seat to book</p>
+            <p className="point">Easy cancellation</p>
+            <Link to="/auth/login/">
+              <Button className='action-btn' type="primary" size="large" shape="round" >
+                Book Now
+              </Button>
+            </Link>
+          </div>
         </div>
-      )}
+        <img
+          src={TravelTogetherSvg}
+          className="img-illustration"
+          alt="travel together"
+        />
+      </Content>
     </div>
   );
 }

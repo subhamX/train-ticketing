@@ -18,9 +18,11 @@ const initState: StoreState = {
 let authReducer = (state = initState, action: any) => {
     switch (action.type) {
         case LOGIN_SUCCESS: {
+            // accepts the user and updates the store
             return { ...initState, user: action.payload };
-        }case LOGOUT_SUCCESS: {
-            return {...initState, user: undefined}
+        } case LOGOUT_SUCCESS: {
+            // removes the current user
+            return { ...initState, user: undefined }
         } default: {
             return state;
         }

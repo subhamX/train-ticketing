@@ -1,14 +1,14 @@
 import React from "react";
 import { Layout } from "antd";
+import Head from "../Head/head.component";
 
-const { Header, Footer,  Content } = Layout;
+const { Content } = Layout;
 
 function AuthLayout({ children }: any) {
   return (
     <Layout>
-      <Header>Header</Header>
+      <Head/>
       <Content>{children}</Content>
-      <Footer>Footer</Footer>
     </Layout>
   );
 }

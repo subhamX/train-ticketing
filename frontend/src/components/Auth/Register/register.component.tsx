@@ -26,7 +26,6 @@ function Register() {
       // successfully registered
       dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
       history.push("/");
-
     } catch (err) {
       setErrors(err.message);
       setIsLoading(false);
@@ -37,18 +36,18 @@ function Register() {
   return (
     <AuthLayout>
       <div className="form-wrapper">
-        <Typography.Title style={{ textAlign: "center" }}>
-          Register
-        </Typography.Title>
+        <Typography.Title style={{ textAlign: "center" }}>Register</Typography.Title>
         <Form
           layout="vertical"
           form={form}
           autoComplete="off"
           onFinish={handleSubmit}
         >
-          <Form.Item>
-            {errors ? <Alert message={errors} type="error" /> : null}
-          </Form.Item>
+          {errors ? (
+            <Form.Item>
+              <Alert message={errors} type="error" />
+            </Form.Item>
+          ) : null}
           <Form.Item
             name="first_name"
             label="First Name"

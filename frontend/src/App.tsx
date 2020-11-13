@@ -23,7 +23,8 @@ function App() {
         <NonAuthRoute path="/auth/register/">
           <Register />
         </NonAuthRoute>
-        <Route path="/" component={Landing} />
+      <Route path="/" component={Landing} />
+
       </Switch>
     </BrowserRouter>
   );
