@@ -40,7 +40,7 @@ app.use('/tickets/', ticketRoutes)
 app.use('/trains/', trainRoutes);
 app.use('/auth/', authRoutes);
 app.use('/coaches/', coachesRoute);
-app.use('/user/', userRoutes);
+app.use('/users/', userRoutes);
 app.use('/admin/', adminRoutes);
 
 app.get('/', (req: Request, res: Response) => {

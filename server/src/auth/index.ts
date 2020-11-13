@@ -19,7 +19,7 @@ app.get('/status', verifyToken, (req, res) => {
 })
 
 // register a new user
-app.post('/register/', async (req, res) => {
+app.post('/register/', async (req, res, next) => {
     try {
         const instance = await db.query(
             `SELECT * from users WHERE username = $1 OR email = $2`,
@@ -31,8 +31,8 @@ app.post('/register/', async (req, res) => {
         // user doesn't exist
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         //   insert the user into Users table in database
-        await db.query(
-            `INSERT INTO users(username, email, first_name, last_name, is_admin, password) VALUES($1, $2, $3, $4, $5, $6)`,
+        let data = await db.query(
+            `INSERT INTO users(username, email, first_name, last_name, is_admin, password) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
             [
                 req.body.username,
                 req.body.email,
@@ -42,10 +42,17 @@ app.post('/register/', async (req, res) => {
                 hashedPassword,
             ]
         )
-        res.send({
-            error: true,
-            message: `User ${req.body.username} successfully registered`,
+        let userData = data.rows[0];
+        req.logIn(userData, (err) => {
+            if (err) { return next(err); }
+            res.send({
+                error: false,
+                user: userData,
+                message: `User ${req.body.username} successfully registered`,
+            })
         })
+
+
     } catch (err) {
         res.send({ error: true, message: err.message })
     }
@@ -70,10 +77,12 @@ app.post('/login/', async (req, res, next) => {
 })
 
 // ## logout
-app.post('/logout', async (req, res) => {
+app.post('/logout', verifyToken, async (req, res) => {
     try {
-        req.logOut();
-        res.send({ error: false, message: 'Logged out successfully!' })
+        req.logout();
+        req.session.destroy(function (err) {
+            res.send({ error: false, message: 'Logged out successfully!'})
+        });
     } catch (err) {
         res.send({
             error: true,
