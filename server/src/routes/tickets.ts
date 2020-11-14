@@ -2,6 +2,8 @@ import { Router } from 'express'
 import { bookTicketInstanceSchema } from '../schema/validators';
 import { verifyToken } from '../auth/helper'
 import db from '../db/index'
+import { report } from 'process';
+import { UserSchema } from 'src/schema/model';
 
 const app = Router();
 
@@ -16,12 +18,13 @@ interface Passenger {
 }
 
 interface TicketInstance {
-    ticket_fare: Number;
+    ticket_fare: number;
     journey_date: Date;
     train_number: String;
     transaction_number: String;
     type: String;
     passengers: Passenger[];
+    booking_type: Number;
 }
 
 /**
@@ -80,13 +83,56 @@ function beautifyPassengersOutput(passengersRaw: String) {
     return passengers;
 }
 
+interface transactionVerdict {
+    verdict: "SUCCESS" | "INVALID_TRANSACTION" | "PENDING";
+    message?: string;
+}
+/**
+ * 
+ * Function to verify the ticket_fare and get the payment status
+ */
+async function getPaymentStatus(numberOfPassengers: number,
+    ticket_type: String,
+    ticketFare: number,
+    trainNumber: String,
+    journeyDate: Date,
+    transactionNumber: String
+): Promise<transactionVerdict> {
+    let attribute = `${ticket_type === 'S' ? 'sleeper' : 'ac'}_ticket_fare`;
+    // get ticket fare
+    let resp = await db.query(`SELECT ${attribute} FROM train_instance WHERE train_number=$1 and journey_date=$2`,
+        [trainNumber, journeyDate]);
+
+    if (resp.rowCount === 0) {
+        return { verdict: "INVALID_TRANSACTION", "message": `Invalid train number ${trainNumber} and journey_date ${journeyDate.toDateString()}` };
+    }
+    let amount: number = resp.rows[0][attribute];
+
+    if (amount * numberOfPassengers > ticketFare) {
+        return { verdict: "INVALID_TRANSACTION", "message": "Invalid transaction amount" };
+    }
+
+    // check if transaction number is valid and get status
+    // faking with some generic checks
+    if (transactionNumber.length !== 16) {
+        return { verdict: "INVALID_TRANSACTION", "message": "Invalid transaction number" };
+    }
+
+    await new Promise((res, rej) => {
+        setTimeout(() => {
+            res(1);
+        }, 2000);
+    })
+    return { verdict: "SUCCESS" };
+}
 
 // route to book ticket
 app.post('/book', verifyToken, async (req, res) => {
-    try {
-        let instance: TicketInstance = req.body;
-        let username = res.locals.username;
+    let instance: TicketInstance = req.body;
+    let username = (req.user as UserSchema).username;
 
+    try {
+        instance.journey_date = new Date(instance.journey_date);
         let result = bookTicketInstanceSchema.validate(instance);
         if (result.error !== undefined) {
             throw Error(result.error?.details[0].message);
@@ -103,7 +149,25 @@ app.post('/book', verifyToken, async (req, res) => {
             throw Error(`Invalid Coach Type: ${instance.type}`);
         }
 
-        let method = 0;
+        // verify payment amount and status
+        let resp = await getPaymentStatus(instance.passengers.length,
+            instance.type,
+            instance.ticket_fare,
+            instance.train_number,
+            instance.journey_date,
+            instance.transaction_number
+        );
+
+        if (resp.verdict === 'INVALID_TRANSACTION' || resp.verdict === 'PENDING') {
+            // pending transactions will be handled after payment confirmation is recieved to webhook 
+            throw Error(resp.message);
+        }
+    } catch (err) {
+        return res.send({ error: true, message: err.message })
+    }
+    // transaction is valid
+    try {
+        let method = instance.booking_type;
         let passengerPayload = generatePassengerString(instance.passengers);
         let response = await db.query(`call book_tickets(passengers=>array[${passengerPayload}],
             train_number=>$1,
@@ -114,10 +178,16 @@ app.post('/book', verifyToken, async (req, res) => {
             method=>$6,
             type=>$7
         )`,
-            [instance.train_number, instance.journey_date, username, instance.transaction_number, instance.ticket_fare, method, instance.type]);
+            [
+                instance.train_number, instance.journey_date,
+                username, instance.transaction_number,
+                instance.ticket_fare, method,
+                instance.type
+            ]);
 
         let { passengers, ...meta } = response.rows[0];
-        res.send({
+        meta.type=instance.type
+        return res.send({
             error: false,
             response: {
                 meta,
@@ -125,8 +195,10 @@ app.post('/book', verifyToken, async (req, res) => {
             },
         })
     } catch (err) {
-        res.send({ error: true, message: err.message })
+        // valid transaction couldn't booked because of some problems
+        return res.send({ error: true, message: err.message })
     }
+
 })
 
 export default app;

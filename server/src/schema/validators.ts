@@ -20,6 +20,7 @@ export const bookTicketInstanceSchema = Joi.object({
     transaction_number: Joi.string().required(),
     type: Joi.string().required(),
     passengers: Joi.array().required(),
+    booking_type: Joi.number().required(),
 })
 
 export const coachesSchema = Joi.object({
