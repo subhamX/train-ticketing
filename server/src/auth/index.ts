@@ -12,8 +12,9 @@ dotenv.config()
 const app = Router()
 
 app.get('/status', verifyToken, (req, res) => {
+    let { password, current_token, ...userData } = req.user as UserSchema;
     res.json({
-        user: req.user,
+        user: userData,
         message: 'Successfully logged into private route',
     })
 })
@@ -42,7 +43,8 @@ app.post('/register/', async (req, res, next) => {
                 hashedPassword,
             ]
         )
-        let userData = data.rows[0];
+        let { password, current_token, ...userData } = data.rows[0] as UserSchema;
+
         req.logIn(userData, (err) => {
             if (err) { return next(err); }
             res.send({
@@ -68,7 +70,8 @@ app.post('/login/', async (req, res, next) => {
             }
             req.logIn(user, (err) => {
                 if (err) { return next(err); }
-                res.send({ "error": false, message: "Success! You are logged in." });
+                let { password, current_token, ...user } = req.user as UserSchema;
+                res.send({ "error": false, message: "Success! You are logged in.", user });
             });
         })(req, res, next);
     } catch (err) {
@@ -81,7 +84,7 @@ app.post('/logout', verifyToken, async (req, res) => {
     try {
         req.logout();
         req.session.destroy(function (err) {
-            res.send({ error: false, message: 'Logged out successfully!'})
+            res.send({ error: false, message: 'Logged out successfully!' })
         });
     } catch (err) {
         res.send({

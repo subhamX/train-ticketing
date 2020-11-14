@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { trainSchema } from '../schema/validators';
+import { trainInstanceSchema, trainSchema } from '../schema/validators';
 import { verifyAdmin, verifyToken } from '../auth/helper';
 import db from '../db/index';
 
@@ -86,12 +86,23 @@ interface TrainInstanceSchema {
     number_of_sleeper_coaches: Number;
     ac_coach_id: Number;
     sleeper_coach_id: Number;
+    sleeper_ticket_fare: Number;
+    ac_ticket_fare: Number;
 }
 
 app.post('/addbookinginstance/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         let instance: TrainInstanceSchema = req.body;
+        instance.booking_end_time=new Date(instance.booking_end_time);
+        instance.booking_start_time=new Date(instance.booking_start_time);
+        instance.source_departure_time=new Date(instance.source_departure_time);
+        instance.destination_arrival_time=new Date(instance.destination_arrival_time);
+        instance.journey_date=new Date(instance.journey_date);
 
+        let result = trainInstanceSchema.validate(instance);
+        if (result.error !== undefined) {
+            throw Error("ValidationError: " + result.error?.details[0].message);
+        }
         let response = await db.query(`insert into train_instance(
             train_number, 
             journey_date, 
@@ -102,12 +113,19 @@ app.post('/addbookinginstance/', verifyToken, verifyAdmin, async (req, res) => {
             number_of_ac_coaches, 
             number_of_sleeper_coaches, 
             ac_coach_id, 
-            sleeper_coach_id)
-        values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [instance.train_number,
-        instance.journey_date, instance.booking_start_time,
-        instance.booking_end_time, instance.source_departure_time,
-        instance.destination_arrival_time, instance.number_of_ac_coaches,
-        instance.number_of_sleeper_coaches, instance.ac_coach_id, instance.sleeper_coach_id]);
+            sleeper_coach_id,
+            sleeper_ticket_fare,
+            ac_ticket_fare
+        )
+        values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, [
+            instance.train_number,
+            instance.journey_date, instance.booking_start_time,
+            instance.booking_end_time, instance.source_departure_time,
+            instance.destination_arrival_time, instance.number_of_ac_coaches,
+            instance.number_of_sleeper_coaches,
+            instance.ac_coach_id, instance.sleeper_coach_id,
+            instance.sleeper_ticket_fare, instance.ac_ticket_fare
+        ]);
 
         let responseMsg;
         if (response.rowCount) {
