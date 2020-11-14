@@ -1,31 +1,12 @@
 import { Router } from 'express'
-import { bookTicketInstanceSchema } from '../schema/validators';
+import { bookTicketInstanceSchema, cancelTicketSchema } from '../schema/validators';
 import { verifyToken } from '../auth/helper'
 import db from '../db/index'
-import { report } from 'process';
-import { UserSchema } from 'src/schema/model';
+import { UserSchema, Passenger, TicketInstance, transactionVerdict } from 'src/schema/model';
 
 const app = Router();
 
 
-interface Passenger {
-    passenger_age: Number;
-    passenger_name: String;
-    passenger_gender: String;
-    seat_number: Number;
-    coach_id: String;
-    seat_preference: String;
-}
-
-interface TicketInstance {
-    ticket_fare: number;
-    journey_date: Date;
-    train_number: String;
-    transaction_number: String;
-    type: String;
-    passengers: Passenger[];
-    booking_type: Number;
-}
 
 /**
  * 
@@ -83,10 +64,7 @@ function beautifyPassengersOutput(passengersRaw: String) {
     return passengers;
 }
 
-interface transactionVerdict {
-    verdict: "SUCCESS" | "INVALID_TRANSACTION" | "PENDING";
-    message?: string;
-}
+
 /**
  * 
  * Function to verify the ticket_fare and get the payment status
@@ -125,6 +103,7 @@ async function getPaymentStatus(numberOfPassengers: number,
     })
     return { verdict: "SUCCESS" };
 }
+
 
 // route to book ticket
 app.post('/book', verifyToken, async (req, res) => {
@@ -186,7 +165,7 @@ app.post('/book', verifyToken, async (req, res) => {
             ]);
 
         let { passengers, ...meta } = response.rows[0];
-        meta.type=instance.type
+        meta.type = instance.type
         return res.send({
             error: false,
             response: {
@@ -198,7 +177,46 @@ app.post('/book', verifyToken, async (req, res) => {
         // valid transaction couldn't booked because of some problems
         return res.send({ error: true, message: err.message })
     }
+})
 
+
+/**
+ * route to cancel a berth in a valid ticket
+ */
+app.post('/cancel/', verifyToken, async (req, res) => {
+    try {
+        let pnrNumber = req.body.pnr_number;
+        let seats: [{ seat_number: Number, coach_number: String }] = req.body.seats;
+        let result = cancelTicketSchema.validate({ pnr_number: pnrNumber, seats });
+        if (result.error !== undefined) {
+            throw Error("ValidationError: " + result.error?.details[0].message);
+        }
+        let coach_numbers: string = "", seat_numbers: string = "";
+        seats.forEach((e, index) => {
+            coach_numbers += `'${String(e.coach_number)}'`
+            seat_numbers += String(e.seat_number)
+            if (index !== seats.length - 1) {
+                coach_numbers += ", ";
+                seat_numbers += ", ";
+            }
+        })
+        coach_numbers = `array[${coach_numbers}]`;
+        seat_numbers = `array[${seat_numbers}]`;
+
+        await db.query(`SELECT cancel_berths(
+            pnr_num=>$1, 
+            seats=>${seat_numbers}, 
+            coach_numbers=>${coach_numbers},
+            user_name=>$2)`, [pnrNumber, (req.user as UserSchema).username])
+
+        res.send({
+            error: false,
+            message: 'Berth Cancellation Successful'
+        })
+
+    } catch (err) {
+        res.send({ error: true, message: err.message })
+    }
 })
 
 export default app;

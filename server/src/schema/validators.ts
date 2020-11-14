@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import { join } from 'path';
 
 
 export const trainSchema = Joi.object({
@@ -27,6 +26,11 @@ export const coachesSchema = Joi.object({
     name: Joi.string().min(1).required(),
     destination: Joi.string().min(1).required(),
     source: Joi.string().min(1).required(),
+})
+
+export const cancelTicketSchema = Joi.object({
+    pnr_number: Joi.string().required(),
+    seats: Joi.array().required(),
 })
 
 
