@@ -1,43 +1,90 @@
 import React, { useState } from "react";
-// import { loginFunc } from "../../../services/api";
+import { Form, Input, Button, Alert, Typography } from "antd";
+import AuthLayout from "../authLayout";
 
-interface IUserName {
-  username: String;
-}
-interface IPassword {
-  password: String;
-}
+import "./login.component.css";
 
-const onClickHandler = (username: IUserName, password: IPassword) => {
-  // let res = loginFunc(username.username, password.password);
-};
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { loginUser } from "../../../services/api";
+import { LOGIN_SUCCESS } from "../../../services/constants";
 
 function Login() {
-  const [username, changeUsername] = useState<IUserName>({ username: "" });
-  const [password, changePassword] = useState<IPassword>({ password: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState("");
 
-  const usernameOnChange = (username: String) => {
-    changeUsername({ username: username });
-  };
-  const passwordOnChange = (password: String) => {
-    changePassword({ password: password });
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const handleSubmit = async (payload: any) => {
+    try {
+      setIsLoading(true);
+      let res = await loginUser(payload);
+      console.log("Hello LoggedIn World 101", res);
+      if (res.data.error === true) {
+        throw Error(res.data.message);
+      }
+      // successfully loggedin
+      dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
+      history.push("/");
+    } catch (err) {
+      setErrors(err.message);
+      setIsLoading(false);
+    }
   };
 
+  const [form] = Form.useForm();
   return (
-    <div>
-      <h1>Login</h1>
-      <input
-        type="text"
-        placeholder="username"
-        onChange={(val) => usernameOnChange(val.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="password"
-        onChange={(val) => passwordOnChange(val.target.value)}
-      />
-      <button onClick={() => onClickHandler(username, password)}>Login</button>
-    </div>
+    <AuthLayout>
+      <div className="form-wrapper">
+        <Typography.Title style={{ textAlign: "center" }}>
+          Login
+        </Typography.Title>
+        <Form
+          layout="vertical"
+          form={form}
+          autoComplete="off"
+          onFinish={handleSubmit}
+        >
+          {errors ? (
+            <Form.Item>
+              <Alert message={errors} type="error" />
+            </Form.Item>
+          ) : null}
+          <Form.Item
+            name="username"
+            label="username"
+            rules={[
+              {
+                required: true,
+                message: "Please input your username!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your password!",
+              },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              Login
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+    </AuthLayout>
   );
 }
 
