@@ -271,5 +271,24 @@ app.get('/info/:id', verifyToken, async (req, res) => {
     }
 })
 
+/**
+ * Route to get all tickets associated with a verified user
+ */
+app.get('/all/', verifyToken, async (req, res) => {
+    try {
+        let username = (req.user as UserSchema).username;
+        let resp = await db.query(`select * from tickets where username=$1`,
+            [username]
+        );
+
+        res.send({
+            error: false,
+            username,
+            berths: resp.rows,
+        })
+    } catch (err) {
+        res.send({ error: true, message: err.message })
+    }
+})
 
 export default app;
