@@ -39,6 +39,8 @@ CREATE TABLE "train_instance" (
     "number_of_sleeper_coaches" int  DEFAULT 0 NOT NULL,
     "ac_coach_id" int   NULL,
     "sleeper_coach_id" int   NULL,
+    "sleeper_ticket_fare" decimal NOT NULL,
+    "ac_ticket_fare" decimal NOT NULL,
     CONSTRAINT "pk_train_instance" PRIMARY KEY (
         "train_number","journey_date"
      )
