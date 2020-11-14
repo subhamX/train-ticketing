@@ -24,6 +24,11 @@ interface TicketInstance {
     passengers: Passenger[];
 }
 
+/**
+ * 
+ * Function to parse the passengers information into pl/pgsql format
+ * 
+ */
 function generatePassengerString(passengers: Passenger[]) {
     let finalString: String = '';
     passengers.forEach((passenger, index) => {

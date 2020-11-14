@@ -26,6 +26,26 @@ app.post('/trains/add/', verifyToken, verifyAdmin, async (req, res) => {
     }
 })
 
+/**
+ * 
+ * Function to expand the given rowCount and columnCount
+ * expand(3, 2) returns "($1, $2), ($3, $4), ($5, $6)" 
+ */
+function expand(rowCount: number, columnCount: number, startAt = 1) {
+    var index = startAt
+    return Array(rowCount).fill(0).map(v => `(${Array(columnCount).fill(0).map(v => `$${index++}`).join(", ")})`).join(", ")
+}
+
+/**
+ * Function to flatten the 2-D array
+ * flatten([[1, 2], [3, 4]]) returns [1, 2, 3, 4]
+ */
+function flatten(arr: any[][]) {
+    var newArr: any = []
+    arr.forEach((v: any) => v.forEach((p: any) => newArr.push(p)))
+    return newArr
+}
+
 app.post('/coaches/add/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         let { name, description, composition } = req.body;
@@ -36,10 +56,15 @@ app.post('/coaches/add/', verifyToken, verifyAdmin, async (req, res) => {
 
         let compositionTableName = coach.rows[0]['composition_table'];
         let seats = composition.length;
+        let payload = [];
         for (let i = 0; i < seats; i++) {
-            await db.query(`INSERT INTO ${compositionTableName}(berth_number, berth_type)
-            VALUES($1, $2)`, [composition[i]['berth_number'], composition[i]['berth_type']]);
+            let berth_number = composition[i]['berth_number'];
+            let berth_type = composition[i]['berth_type'];
+            payload.push([berth_number, berth_type]);
         }
+        // performing batch insert
+        await db.query(`INSERT INTO ${compositionTableName}(berth_number, berth_type) VALUES ${expand(payload.length, 2)}`, flatten(payload))
+
         res.send({
             error: false,
             message: coach.rows[0]
@@ -83,12 +108,12 @@ app.post('/addbookinginstance/', verifyToken, verifyAdmin, async (req, res) => {
         instance.booking_end_time, instance.source_departure_time,
         instance.destination_arrival_time, instance.number_of_ac_coaches,
         instance.number_of_sleeper_coaches, instance.ac_coach_id, instance.sleeper_coach_id]);
-        
+
         let responseMsg;
-        if(response.rowCount){
-            responseMsg=`Booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date} was successfully inserted`;
-        }else{
-            responseMsg=`Something went wrong while adding a booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date}`;
+        if (response.rowCount) {
+            responseMsg = `Booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date} was successfully inserted`;
+        } else {
+            responseMsg = `Something went wrong while adding a booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date}`;
         }
         res.send({
             error: false,
