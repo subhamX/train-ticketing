@@ -20,7 +20,36 @@ declare
     temp varchar(10);
     berth record;
 	i int;
+    table_exist_flag boolean;
 begin
+
+    ac_coach_id=NEW.ac_coach_id;
+    sleeper_coach_id=NEW.sleeper_coach_id;
+    number_of_ac_coaches=NEW.number_of_ac_coaches;
+    number_of_sleeper_coaches=NEW.number_of_sleeper_coaches;
+
+    -- checking if coachid is valid
+    SELECT EXISTS (
+        SELECT FROM coaches
+        WHERE coach_id=ac_coach_id
+    )
+    into table_exist_flag;
+
+    if not table_exist_flag then
+        raise exception 'Invalid AC Coach ID %', ac_coach_id;
+    end if;
+
+    SELECT EXISTS (
+        SELECT FROM coaches
+        WHERE coach_id=sleeper_coach_id
+    )
+    into table_exist_flag;
+
+    if not table_exist_flag then
+        raise exception 'Invalid Sleeper Coach ID %', ac_coach_id;
+    end if;
+
+
     train_table_name=train_table_name_PREFIX || '_' || NEW.train_number || '_' || to_char(NEW.journey_date,'ddmmyyyy');
     -- create a new table named train_{train_number}_{DDMMYY}
     execute format(
@@ -41,10 +70,7 @@ begin
         ADD FOREIGN KEY("pnr_number")
         REFERENCES "tickets" ("pnr_number")', train_table_name);
 
-    ac_coach_id=NEW.ac_coach_id;
-    sleeper_coach_id=NEW.sleeper_coach_id;
-    number_of_ac_coaches=NEW.number_of_ac_coaches;
-    number_of_sleeper_coaches=NEW.number_of_sleeper_coaches;
+
 
     -- handling for AC coaches
     -- retrieving the ac_composition table name
