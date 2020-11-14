@@ -430,6 +430,7 @@ declare
 begin
 	coach_composition_table_name = OLD.composition_table;
 	execute format('drop table %I', coach_composition_table_name);
+	raise info 'Successfully deleted %', coach_composition_table_name;
 	
 	return OLD;
 end
@@ -441,3 +442,32 @@ create trigger on_coach_delete
 	on coaches
 	for each row
 	execute procedure handle_on_coach_delete();
+
+
+
+-- TRIGGER 5: if any row in train_instance is deleted then the following trigger
+--  deletes the train_table corresponding to it
+create or replace function handle_on_train_instance_delete()
+	returns trigger
+	language plpgsql
+	as
+$$
+declare
+	train_table_name text;
+begin
+	select get_train_table_name('train_'::text, OLD.train_number, OLD.journey_date)
+	into train_table_name;
+
+	execute format('drop table %I', train_table_name);
+	raise info 'Successfully deleted %', train_table_name;
+
+	return OLD;
+end
+$$;
+
+
+create trigger on_train_instance_delete
+	before delete
+	on train_instance
+	for each row
+	execute procedure handle_on_train_instance_delete();

@@ -2,11 +2,11 @@ DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'passenger') THEN
 		create type passenger as (passenger_name text, 
-		passenger_age int, 
-		passenger_gender char, 
-		seat_number int, 
-		coach_number text, 
-		seat_pref text);
+			passenger_age int, 
+			passenger_gender char, 
+			seat_number int, 
+			coach_number text, 
+			seat_pref text);
     END IF;
 END$$;
 
