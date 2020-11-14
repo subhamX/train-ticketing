@@ -3,6 +3,7 @@ import { bookTicketInstanceSchema, cancelTicketSchema } from '../schema/validato
 import { verifyToken } from '../auth/helper'
 import db from '../db/index'
 import { UserSchema, Passenger, TicketInstance, transactionVerdict } from 'src/schema/model';
+import Joi from 'joi';
 
 const app = Router();
 
@@ -218,5 +219,57 @@ app.post('/cancel/', verifyToken, async (req, res) => {
         res.send({ error: true, message: err.message })
     }
 })
+
+
+/**
+ * 
+ * Route to get details of the ticket by the authenticated booking agent
+ * 
+ */
+app.get('/info/:id', verifyToken, async (req, res) => {
+    try {
+        let pnrNumber = req.params.id;
+        Joi.assert(pnrNumber, Joi.string().alphanum().required())
+        pnrNumber = pnrNumber.toLowerCase();
+        let resp = await db.query(`select pnr_number, tickets.train_number, tickets.journey_date, train_table_name,
+            train_instance.source_departure_time, train_instance.destination_arrival_time
+            from tickets, train_instance
+            where tickets.train_number=train_instance.train_number
+            and tickets.journey_date=train_instance.journey_date
+            and pnr_number=$1
+            and username=$2`,
+            [pnrNumber, (req.user as UserSchema).username]
+        );
+        if (resp.rowCount === 0) {
+            throw Error("Invalid PNR Number or not authorized to see the details");
+        }
+        let meta = {
+            pnr_number: pnrNumber,
+            train_number: resp.rows[0].train_number,
+            journey_date: new Date(resp.rows[0].journey_date).toDateString(),
+            destination_arrival_time: resp.rows[0].destination_arrival_time,
+            source_departure_time: resp.rows[0].source_departure_time,
+        }
+        let trainTableName = resp.rows[0].train_table_name;
+
+        let berthsResp = await db.query(`select *, 1 as is_cancelled
+            from cancelled_berths
+            where pnr_number=$1
+            union
+            select *, 0 as is_cancelled
+            from ${trainTableName}
+            where pnr_number=$1;`,
+            [pnrNumber]
+        )
+        res.send({
+            error: false,
+            meta,
+            berths: berthsResp.rows,
+        })
+    } catch (err) {
+        res.send({ error: true, message: err.message })
+    }
+})
+
 
 export default app;
