@@ -391,3 +391,27 @@ create trigger train_instance_update_trigger
     for each row
     execute procedure handle_on_train_instance_update();
 
+
+-- TRIGGER 5: if any row in coaches are deleted then the following trigger
+--  deletes the coach_composition corresponding to it
+create or replace function handle_on_coach_delete()
+	returns trigger
+	language plpgsql
+	as
+$$
+declare
+	coach_composition_table_name text;
+begin
+	coach_composition_table_name = OLD.composition_table;
+	execute format('drop table %I', coach_composition_table_name);
+	
+	return OLD;
+end
+$$;
+
+
+create trigger on_coach_delete
+	before delete
+	on coaches
+	for each row
+	execute procedure handle_on_coach_delete();
