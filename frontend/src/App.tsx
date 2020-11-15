@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkUserAuthStatus } from "./services/actions/auth";
 import NonAuthRoute from "./components/NonAuthRoute/nonAuthRoute";
 import PrivateRoute from "./components/PrivateRoute/privateRoute";
-import UserProfile from "./components/Profile/project.component";
+import UserProfile from "./components/Profile/profile.component";
 import Loader from "./components/Loader/loader.component";
 
 function App() {

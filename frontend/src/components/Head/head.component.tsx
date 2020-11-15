@@ -22,6 +22,8 @@ function Head() {
         return "2";
       case "/auth/register/":
         return "3";
+      case "/profile/":
+        return "profile";
       default:
         return "1";
     }
@@ -79,9 +81,14 @@ function NavMenu({ defaultKey, md }: any) {
       <Menu.Item key="1"></Menu.Item>
 
       {user ? (
-        <Menu.Item key="logout" onClick={() => dispatch(logoutUser())}>
-          Logout
-        </Menu.Item>
+        <>
+          <Menu.Item key="profile">
+            <Link to="/profile/">Profile</Link>
+          </Menu.Item>
+          <Menu.Item key="logout" onClick={() => dispatch(logoutUser())}>
+            Logout
+          </Menu.Item>
+        </>
       ) : (
         <>
           <Menu.Item key="2">
