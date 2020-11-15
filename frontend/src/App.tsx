@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./components/Auth/Login/login.component";
 import Register from "./components/Auth/Register/register.component";
 import Landing from "./components/Landing/landing.component";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Train from "./components/Trains/trains.component";
 import TrainInfo from "./components/Trains/TrainInfo/trainInfo.component";
 import { useDispatch } from "react-redux";
@@ -36,15 +36,10 @@ function App() {
         <PrivateRoute path="/profile">
           <UserProfile />
         </PrivateRoute>
-        <Route path="/" component={Landing} />
-        <NonAuthRoute exact path="/trains/">
+        <Route exact path="/trains/">
           <Train />
-        </NonAuthRoute>
-        <NonAuthRoute exact path="/trains/info/:train_id">
-          <TrainInfo />
-        </NonAuthRoute>
-      <Route path="/" component={Landing} />
-
+        </Route>
+        <Route path="/" component={Landing} />
       </Switch>
     </BrowserRouter>
   );

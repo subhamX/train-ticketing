@@ -15,6 +15,8 @@ export const registerUser = (payload: any) => axios.post(
     }
 );
 
+export const getTrainsList = () => axios.get(`${url}/trains/list/`, { withCredentials: true });
+
 export const loginUser = (payload: any) => axios.post(
     `${process.env.REACT_APP_SERVER_URL}/auth/login`,
     payload,
@@ -22,3 +24,6 @@ export const loginUser = (payload: any) => axios.post(
         withCredentials: true
     }
 );
+
+export const getTrainInstancesList = (trainNumber:any) => axios.get(`${url}/trains/info/${trainNumber}`, { withCredentials: true });
+

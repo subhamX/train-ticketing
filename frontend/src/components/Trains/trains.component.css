@@ -25,9 +25,9 @@ Divider {
 }
 
 .src-dest-row {
-    display: flex;
+    /* display: flex;
     flex-direction: col;
-    justify-content: space-evenly;
+    justify-content: space-evenly; */
 }
 
 .seats-col {
