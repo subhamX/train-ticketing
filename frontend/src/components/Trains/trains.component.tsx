@@ -1,13 +1,5 @@
 import React, { CSSProperties, useEffect } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Tag,
-  Spin,
-  Collapse,
-  Button,
-} from "antd";
+import { Card, Row, Col, Tag, Spin, Collapse, Button, Alert } from "antd";
 import { EnvironmentFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 
@@ -19,7 +11,7 @@ import { getTrainInstance, getTrains } from "../../services/actions/trains";
 const { Panel } = Collapse;
 
 function AllTrains() {
-  const {
+  let {
     trains,
     fetching_trains: is_loading,
     fetching_train_instances: train_instance_loading,
@@ -43,35 +35,40 @@ function AllTrains() {
         {is_loading ? (
           <Spin tip="Loading Trains"></Spin>
         ) : (
-          <div className="train-list-item">
-            <Collapse>
-              {trains &&
-                trains.map((train: any) => {
-                  return (
-                    <Panel
-                      style={container}
-                      showArrow={false}
-                      key={train.train_number}
-                      header={
-                        <TrainListItem
-                          history={history}
-                          train_num={train.train_number}
-                          train_name={train.train_name}
-                          dest={train.destination}
-                          src={train.source}
-                        />
-                      }
-                    >
-                      {train_instance_loading ? (
-                        <Spin tip="Loading Trains"></Spin>
-                      ) : (
-                        <TrainInstances trainNumber={train.train_number} />
-                      )}
-                    </Panel>
-                  );
-                })}
-            </Collapse>
-          </div>
+          <>
+            {trains && trains.length === 0 ? (
+              <Alert style={{width: '80%', padding: '30px', textAlign: 'center',}} message="No Trains Found" type="warning" />
+            ) : null}
+            <div className="train-list-item">
+              <Collapse>
+                {trains &&
+                  trains.map((train: any) => {
+                    return (
+                      <Panel
+                        style={container}
+                        showArrow={false}
+                        key={train.train_number}
+                        header={
+                          <TrainListItem
+                            history={history}
+                            train_num={train.train_number}
+                            train_name={train.train_name}
+                            dest={train.destination}
+                            src={train.source}
+                          />
+                        }
+                      >
+                        {train_instance_loading ? (
+                          <Spin tip="Loading Trains"></Spin>
+                        ) : (
+                          <TrainInstances trainNumber={train.train_number} />
+                        )}
+                      </Panel>
+                    );
+                  })}
+              </Collapse>
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -96,7 +93,6 @@ function TrainInstances({ trainNumber }: any) {
     dispatch(getTrainInstance(trainNumber));
   }, [dispatch, trainNumber]);
 
-
   let keyStyle: CSSProperties = { fontWeight: "bold" };
   return (
     <div>
@@ -104,6 +100,9 @@ function TrainInstances({ trainNumber }: any) {
         <Spin></Spin>
       ) : (
         <>
+          {instances && instances.length === 0 ? (
+            <Alert message="No Booking Instances Found" type="warning" />
+          ) : null}
           {instances &&
             instances.map((data: any, index: any) => {
               return (
