@@ -3,7 +3,10 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./components/Auth/Login/login.component";
 import Register from "./components/Auth/Register/register.component";
 import Landing from "./components/Landing/landing.component";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
+import Train from "./components/Trains/trains.component";
+import TrainInfo from "./components/Trains/TrainInfo/trainInfo.component";
+import { useDispatch } from "react-redux";
 import { checkUserAuthStatus } from "./services/actions/auth";
 import NonAuthRoute from "./components/NonAuthRoute/nonAuthRoute";
 import PrivateRoute from "./components/PrivateRoute/privateRoute";
@@ -24,16 +27,24 @@ function App() {
   return (
     <BrowserRouter>
       <Switch>
-        <NonAuthRoute path="/auth/login/">
+        <NonAuthRoute exact path="/auth/login/">
           <Login />
         </NonAuthRoute>
-        <NonAuthRoute path="/auth/register/">
+        <NonAuthRoute exact path="/auth/register/">
           <Register />
         </NonAuthRoute>
         <PrivateRoute path="/profile">
           <UserProfile />
         </PrivateRoute>
         <Route path="/" component={Landing} />
+        <NonAuthRoute exact path="/trains/">
+          <Train />
+        </NonAuthRoute>
+        <NonAuthRoute exact path="/trains/info/:train_id">
+          <TrainInfo />
+        </NonAuthRoute>
+      <Route path="/" component={Landing} />
+
       </Switch>
     </BrowserRouter>
   );

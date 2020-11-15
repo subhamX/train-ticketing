@@ -18,12 +18,14 @@ function Head() {
     switch (location.pathname) {
       case "/":
         return "1";
-      case "/auth/login/":
+      case "/trains/":
         return "2";
-      case "/auth/register/":
+      case "/auth/login/":
         return "3";
       case "/profile/":
         return "profile";
+      case "/auth/register/":
+        return "4";
       default:
         return "1";
     }
@@ -79,6 +81,9 @@ function NavMenu({ defaultKey, md }: any) {
       defaultSelectedKeys={[defaultKey]}
     >
       <Menu.Item key="1"></Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/trains/">Trains</Link>
+      </Menu.Item>
 
       {user ? (
         <>
@@ -91,10 +96,10 @@ function NavMenu({ defaultKey, md }: any) {
         </>
       ) : (
         <>
-          <Menu.Item key="2">
+          <Menu.Item key="3">
             <Link to="/auth/login/">Login</Link>
           </Menu.Item>
-          <Menu.Item key="3">
+          <Menu.Item key="4">
             <Link to="/auth/register/">Register</Link>
           </Menu.Item>
         </>
