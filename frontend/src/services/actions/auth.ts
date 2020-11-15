@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
 import { getUserData, sendLogOutSignal } from "../api";
-import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../constants";
+import { LOADING_END, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../constants";
 
 /**
  * Action to update the user instance in the store 
@@ -10,10 +10,11 @@ export const checkUserAuthStatus = () => async (dispatch: Dispatch) => {
   if (res.data.error === false) {
     // user is logged in
     console.log("User is authenticated")
-    dispatch({ type: LOGIN_SUCCESS, payload: res.data.user })
+    dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
   } else {
     console.log("User not authenticated")
   }
+  dispatch({ type: LOADING_END });
 }
 
 

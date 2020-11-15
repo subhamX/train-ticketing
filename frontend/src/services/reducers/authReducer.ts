@@ -1,6 +1,6 @@
 import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from '../constants';
 
-export interface StoreState {
+export interface AuthStore {
     user?: {
         username: string
         email: string
@@ -11,7 +11,7 @@ export interface StoreState {
 }
 
 // Reducer
-const initState: StoreState = {
+const initState: AuthStore = {
     user: undefined
 };
 
