@@ -5,6 +5,9 @@ import Register from "./components/Auth/Register/register.component";
 import Landing from "./components/Landing/landing.component";
 import { useSelector } from "react-redux";
 import Train from "./components/Trains/trains.component";
+import TrainInfo from "./components/Trains/TrainInfo/trainInfo.component";
+import TicketSearch from "./components/Tickets/ticketSearch/ticketSearch.component";
+import TicketSearchResults from "./components/Tickets/ticketSearchResult/ticketSearchResult.component";
 import { useDispatch } from "react-redux";
 import { checkUserAuthStatus } from "./services/actions/auth";
 import NonAuthRoute from "./components/NonAuthRoute/nonAuthRoute";
@@ -56,15 +59,20 @@ function App() {
         >
           <AddNewBookingInstance />
         </PrivateRoute>
-        <PrivateRoute
-          adminRoute={true}
-          exact
-          path="/admin/coaches/add/"
-        >
+        <PrivateRoute adminRoute={true} exact path="/admin/coaches/add/">
           <AddNewCoach />
         </PrivateRoute>
 
-        <Route exact path="/" component={Landing} />
+        <NonAuthRoute exact path="/trains/info/:train_id">
+          <TrainInfo />
+        </NonAuthRoute>
+        <Route path="/tickets/search/" exact>
+          <TicketSearch />
+        </Route>
+        <Route path="/tickets/listing">
+          <TicketSearchResults />
+        </Route>
+        <Route path="/" component={Landing} />
       </Switch>
     </BrowserRouter>
   );
