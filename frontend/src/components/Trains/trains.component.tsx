@@ -7,6 +7,10 @@ import Head from "../Head/head.component";
 import "./trains.component.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getTrainInstance, getTrains } from "../../services/actions/trains";
+import moment from "moment";
+import momentDurationFormatSetup from "moment-duration-format";
+
+momentDurationFormatSetup(moment as any);
 
 const { Panel } = Collapse;
 
@@ -37,7 +41,11 @@ function AllTrains() {
         ) : (
           <>
             {trains && trains.length === 0 ? (
-              <Alert style={{width: '80%', padding: '30px', textAlign: 'center',}} message="No Trains Found" type="warning" />
+              <Alert
+                style={{ width: "80%", padding: "30px", textAlign: "center" }}
+                message="No Trains Found"
+                type="warning"
+              />
             ) : null}
             <div className="train-list-item">
               <Collapse>
@@ -55,6 +63,9 @@ function AllTrains() {
                             train_name={train.train_name}
                             dest={train.destination}
                             src={train.source}
+                            journey_duration={train.journey_duration}
+                            sleeper_ticket_fare={train.sleeper_ticket_fare}
+                            ac_ticket_fare={train.ac_ticket_fare}
                           />
                         }
                       >
@@ -77,6 +88,8 @@ function AllTrains() {
 
 export default AllTrains;
 
+let keyStyle: CSSProperties = { fontWeight: "bold" };
+
 function TrainInstances({ trainNumber }: any) {
   const dispatch = useDispatch();
   const { instances, loaded } = useSelector((state: any) => {
@@ -93,7 +106,6 @@ function TrainInstances({ trainNumber }: any) {
     dispatch(getTrainInstance(trainNumber));
   }, [dispatch, trainNumber]);
 
-  let keyStyle: CSSProperties = { fontWeight: "bold" };
   return (
     <div>
       {!loaded ? (
@@ -111,14 +123,6 @@ function TrainInstances({ trainNumber }: any) {
                     <Col span={24}>
                       <Row>
                         <Col style={keyStyle} span={8}>
-                          Sleeper Ticket Fare:
-                        </Col>
-                        <Col span={16}>{data.sleeper_ticket_fare}</Col>
-                      </Row>
-                    </Col>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
                           Journey Date:
                         </Col>
                         <Col span={16}>
@@ -126,14 +130,7 @@ function TrainInstances({ trainNumber }: any) {
                         </Col>
                       </Row>
                     </Col>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          AC Ticket Fare:
-                        </Col>{" "}
-                        <Col span={16}>{data.ac_ticket_fare}</Col>
-                      </Row>
-                    </Col>
+
                     <Col span={24}>
                       <Row>
                         <Col style={keyStyle} span={8}>
@@ -190,7 +187,16 @@ function TrainInstances({ trainNumber }: any) {
   );
 }
 
-function TrainListItem({ history, train_num, train_name, src, dest }: any) {
+function TrainListItem({
+  history,
+  train_num,
+  train_name,
+  src,
+  dest,
+  journey_duration,
+  sleeper_ticket_fare,
+  ac_ticket_fare,
+}: any) {
   const rowStyle = {
     padding: "6px",
     fontSize: "1.1em",
@@ -243,6 +249,43 @@ function TrainListItem({ history, train_num, train_name, src, dest }: any) {
           </div>
         </Col>
       </Row>
+      <Col span={24} style={{ textAlign: "center" }}>
+        <Alert
+          message={
+            <div>
+              <Col span={24}>
+                <Row>
+                  <Col style={keyStyle} span={8}>
+                    Journey Duration:
+                  </Col>
+                  <Col span={16}>{`${moment
+                    .duration(journey_duration)
+                    .format("d [days], h [hours], m [minutes], s [seconds]")}
+              `}</Col>
+                </Row>
+              </Col>
+
+              <Col span={24}>
+                <Row>
+                  <Col style={keyStyle} span={8}>
+                    Sleeper Ticket Fare:
+                  </Col>
+                  <Col span={16}>{sleeper_ticket_fare}</Col>
+                </Row>
+              </Col>
+              <Col span={24}>
+                <Row>
+                  <Col style={keyStyle} span={8}>
+                    AC Ticket Fare
+                  </Col>{" "}
+                  <Col span={16}>{ac_ticket_fare}</Col>
+                </Row>
+              </Col>
+            </div>
+          }
+        />
+        <br />
+      </Col>
       <Col
         span={24}
         style={{ color: "grey", fontStyle: "italic", textAlign: "center" }}

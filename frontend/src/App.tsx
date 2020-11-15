@@ -5,13 +5,15 @@ import Register from "./components/Auth/Register/register.component";
 import Landing from "./components/Landing/landing.component";
 import { useSelector } from "react-redux";
 import Train from "./components/Trains/trains.component";
-import TrainInfo from "./components/Trains/TrainInfo/trainInfo.component";
 import { useDispatch } from "react-redux";
 import { checkUserAuthStatus } from "./services/actions/auth";
 import NonAuthRoute from "./components/NonAuthRoute/nonAuthRoute";
 import PrivateRoute from "./components/PrivateRoute/privateRoute";
 import UserProfile from "./components/Profile/profile.component";
 import Loader from "./components/Loader/loader.component";
+import AddTrain from "./components/Admin/AddTrain/addTrain.component";
+import AdminHome from "./components/Admin/Home";
+import AddNewBookingInstance from "./components/Admin/AddNewBookingInstance/addNewBookingInstance.component";
 
 function App() {
   const dispatch = useDispatch();
@@ -39,7 +41,21 @@ function App() {
         <Route exact path="/trains/">
           <Train />
         </Route>
-        <Route path="/" component={Landing} />
+        {/* Admin Route */}
+        <PrivateRoute adminRoute={true} exact path="/admin/">
+          <AdminHome />
+        </PrivateRoute>
+        <PrivateRoute adminRoute={true} exact path="/admin/trains/add/">
+          <AddTrain />
+        </PrivateRoute>
+        <PrivateRoute
+          adminRoute={true}
+          exact
+          path="/admin/trains/instance/add/"
+        >
+          <AddNewBookingInstance />
+        </PrivateRoute>
+        <Route exact path="/" component={Landing} />
       </Switch>
     </BrowserRouter>
   );

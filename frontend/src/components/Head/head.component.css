@@ -1,10 +1,9 @@
 header {
-    display: flex;
-    color: white !important;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .logo {
-    color: white;
-  }
-  
+  display: flex;
+  color: white !important;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  color: white;
+}

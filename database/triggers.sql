@@ -473,3 +473,5 @@ create trigger on_train_instance_delete
 	on train_instance
 	for each row
 	execute procedure handle_on_train_instance_delete();
+
+    

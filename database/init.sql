@@ -3,6 +3,10 @@ CREATE TABLE "trains" (
     "train_name" varchar(100)   NOT NULL,
     "source" varchar(100)   NOT NULL,
     "destination" varchar(100)   NOT NULL,
+    "source_departure_time" time   NOT NULL,
+    "journey_duration" interval   NOT NULL,   
+    "sleeper_ticket_fare" decimal NOT NULL,
+    "ac_ticket_fare" decimal NOT NULL,     
     CONSTRAINT "pk_trains" PRIMARY KEY (
         "train_number"
      )
@@ -33,14 +37,10 @@ CREATE TABLE "train_instance" (
     "journey_date" date   NOT NULL,
     "booking_start_time" timestamptz   NOT NULL,
     "booking_end_time" timestamptz   NOT NULL,
-    "source_departure_time" timestamptz   NOT NULL,
-    "destination_arrival_time" timestamptz   NOT NULL,
     "number_of_ac_coaches" int  DEFAULT 0 NOT NULL,
     "number_of_sleeper_coaches" int  DEFAULT 0 NOT NULL,
     "ac_coach_id" int   NULL,
     "sleeper_coach_id" int   NULL,
-    "sleeper_ticket_fare" decimal NOT NULL,
-    "ac_ticket_fare" decimal NOT NULL,
     "train_table_name" varchar(100) NOT NULL,
     CONSTRAINT "pk_train_instance" PRIMARY KEY (
         "train_number","journey_date"
@@ -82,7 +82,7 @@ CREATE TABLE "cancelled_berths" (
     "passenger_name" varchar(100)   NULL,
     "passenger_age" int   NULL,
     "passenger_gender" char   NULL,
-    "cancellation_timestamp" timestamptz not null DEFAULT now()
+    "cancellation_timestamp" timestamptz not null DEFAULT now(),
     PRIMARY KEY (
         "seat_number","coach_number"
      )
@@ -99,6 +99,7 @@ CREATE TABLE "users" (
     "password" varchar(200)   NOT NULL,
     "is_admin" bool   NOT NULL,
     "current_token" varchar(200)   NULL,
+    "create_timestamp" timestamptz   NOT NULL DEFAULT NOW(),
     CONSTRAINT "pk_users" PRIMARY KEY (
         "username"
      ),

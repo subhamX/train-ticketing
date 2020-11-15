@@ -14,6 +14,20 @@ import passport from 'passport';
 import cors from 'cors';
 const app = Express()
 
+/**
+ * Dummy middleware to add delay in response
+ */
+// if (process.env.NODE_ENV === 'development') {
+//     app.use(async (req, res, next) => {
+//         await new Promise((resolve, reject) => {
+//             setTimeout(() => {
+//                 resolve(1);
+//             }, 1000);
+//         })
+//         next();
+//     })
+// }
+
 app.use(
     cors({
         origin: process.env.CLIENT_URL as string,
@@ -59,6 +73,6 @@ app.get('*', function (req, res) {
     });
 });
 
-app.listen(process.env.PORT ?? 3000, () => {
-    console.log(`Server running at PORT:${process.env.PORT ?? 3000}`)
+app.listen(process.env.PORT ?? 8080, () => {
+    console.log(`Server running at PORT:${process.env.PORT ?? 8080}`)
 })

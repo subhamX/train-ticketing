@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "watch": "tsc -w",
-    "start": "nodemon dist/index.js",
+    "start": "node dist/index.js",
+    "start:dev": "nodemon dist/index.js",
     "prettier": "prettier --write ."
   },
   "keywords": [],

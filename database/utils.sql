@@ -1,6 +1,6 @@
 -- * Snippet to drop the complete schema and create a new one 
--- DROP SCHEMA public CASCADE;
--- CREATE SCHEMA public;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 

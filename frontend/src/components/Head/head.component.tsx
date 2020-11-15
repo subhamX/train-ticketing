@@ -26,11 +26,13 @@ function Head() {
         return "profile";
       case "/auth/register/":
         return "4";
+      case "/admin/":
+        return "admin";
       default:
         return "1";
     }
   };
-  const [defaultKey, setdefaultKey] = useState(getDefaultKey());
+  const defaultKey = getDefaultKey();
   const [drawerOpen, setdrawerOpen] = useState(false);
   const { md } = useBreakpoint();
 
@@ -84,7 +86,13 @@ function NavMenu({ defaultKey, md }: any) {
       <Menu.Item key="2">
         <Link to="/trains/">Trains</Link>
       </Menu.Item>
-
+      {user && user.is_admin ? (
+        <>
+          <Menu.Item key="admin">
+            <Link to="/admin/">Admin</Link>
+          </Menu.Item>
+        </>
+      ) : null}
       {user ? (
         <>
           <Menu.Item key="profile">

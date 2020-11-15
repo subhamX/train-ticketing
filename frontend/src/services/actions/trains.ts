@@ -17,5 +17,6 @@ export const getTrains = () => async (dispatch: Dispatch) => {
 export const getTrainInstance = (trainNumber: String) => async (dispatch: Dispatch) => {
   dispatch({ type: TRAIN_INSTANCE_LOADING, trainNumber });
   let res = await getTrainInstancesList(trainNumber);
+  console.log(res);
   dispatch({ type: TRAIN_INSTANCE_LOADING_SUCCESS, trainInstances: res.data.instances, trainNumber: trainNumber });
 }
