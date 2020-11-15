@@ -14,6 +14,7 @@ import Loader from "./components/Loader/loader.component";
 import AddTrain from "./components/Admin/AddTrain/addTrain.component";
 import AdminHome from "./components/Admin/Home";
 import AddNewBookingInstance from "./components/Admin/AddNewBookingInstance/addNewBookingInstance.component";
+import AddNewCoach from "./components/Admin/AddCoach/addCoach.component";
 
 function App() {
   const dispatch = useDispatch();
@@ -55,6 +56,14 @@ function App() {
         >
           <AddNewBookingInstance />
         </PrivateRoute>
+        <PrivateRoute
+          adminRoute={true}
+          exact
+          path="/admin/coaches/add/"
+        >
+          <AddNewCoach />
+        </PrivateRoute>
+
         <Route exact path="/" component={Landing} />
       </Switch>
     </BrowserRouter>

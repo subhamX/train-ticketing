@@ -31,3 +31,6 @@ export const addNewTrain = (payload: { ac_ticket_fare: String; sleeper_ticket_fa
 
 export const addNewBookingInstance = (payload: { train_number: String; journey_date: String, booking_start_time: String; booking_end_time: String, sleeper_coach_id: String, ac_coach_id: String, number_of_sleeper_coaches: Number, number_of_ac_coaches: Number, }) => axios.post(`${url}/admin/addbookinginstance/`, payload, { withCredentials: true });
 
+export const addNewCoach = (payload: { name: String; description: String, composition: {berth_number: Number, berth_type: String}[]; }) => axios.post(`${url}/admin/coaches/add/`, payload, { withCredentials: true });
+
+

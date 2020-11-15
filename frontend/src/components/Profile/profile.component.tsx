@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "../Head/head.component";
-import { Card, Avatar, Table, Tag } from "antd";
+import { Card, Avatar, Table, Tag, Typography, Alert } from "antd";
 import "./profile.component.css";
 import { useSelector } from "react-redux";
 
@@ -12,14 +12,16 @@ function UserProfile() {
       <div className="profile-container">
         <Card className="profile-card">
           <Card.Meta
-            title={`Hello ${user.first_name}`}
+            title={<Typography.Title>{`Hello ${user.first_name}`}</Typography.Title>}
             avatar={
               <Avatar
                 size={80}
-                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                src="https://img.icons8.com/pastel-glyph/128/000000/person-male.png"
               />
             }
           ></Card.Meta>
+          <br/>
+          <Alert message='Please find your details below'/>
           <Table
             pagination={false}
             dataSource={[

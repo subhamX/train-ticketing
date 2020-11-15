@@ -3,3 +3,5 @@ dist/
 .env
 .vscode/settings.json
 server/server.rest
+app.yaml
+.gcloudignore

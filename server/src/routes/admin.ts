@@ -67,7 +67,7 @@ app.post('/coaches/add/', verifyToken, verifyAdmin, async (req, res) => {
 
         res.send({
             error: false,
-            message: coach.rows[0]
+            coach: coach.rows[0]
         })
 
     } catch (err) {
