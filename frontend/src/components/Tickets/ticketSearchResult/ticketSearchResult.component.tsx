@@ -4,7 +4,7 @@ import moment from "moment";
 import { useHistory } from "react-router-dom";
 
 import Head from "../../Head/head.component";
-import "./ticketSearch.component.css";
+import "./ticketSearchResult.component.css";
 
 function TicketSearch() {
   return (
@@ -32,10 +32,10 @@ function SearchCard() {
   return (
     <div>
       <Card
-        className="search-card search-card-wrapper"
+        className="search-card"
         style={{ height: "57vh", padding: "0 0 0 0" }}
       >
-        <Card className="search-card-inside">
+        <Card className="search-card-inside" style={{ height: "50vh" }}>
           <Typography.Title
             style={{ textAlign: "center", paddingBottom: "10px" }}
           >
@@ -57,7 +57,7 @@ function SearchCard() {
                       { required: true, message: "Please select a City!" },
                     ]}
                   >
-                    <Input placeholder="City name" className='city-input-search' />
+                    <Input placeholder="City name" />
                   </Form.Item>
                 </div>
                 <div className="dest-input">
@@ -68,7 +68,7 @@ function SearchCard() {
                       { required: true, message: "Please select a city!" },
                     ]}
                   >
-                    <Input placeholder="City name" className='city-input-search'/>
+                    <Input placeholder="City name" />
                   </Form.Item>
                 </div>
                 <div className="date-input">
@@ -83,7 +83,6 @@ function SearchCard() {
                     ]}
                   >
                     <DatePicker
-                    className='journey_date'
                       disabledDate={(current) => (
                         current && current < moment().subtract(1, "day")
                       )}

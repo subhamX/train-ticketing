@@ -10,36 +10,47 @@
   border: none;
 }
 
-.search-card-inside {
-    border-radius: 15px;
+.search-card-wrapper .search-card-inside {
+  border-radius: 15px;
 }
 
-.card-input-row {
+.search-card-wrapper .card-input-row {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
 }
 
-.ant-input {
+.search-card-wrapper .city-input-search {
   width: 20vw;
   height: 8vh;
 }
 
-.ant-picker-input {
+.search-card-wrapper .journey_date {
   width: 20vw;
-  height: 6.4vh;
+  height: 8vh;
 }
 
-.ant-form-item-control-input {
+.search-card-wrapper .ant-form-item-control-input {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.login-form-button {
+.search-card-wrapper .login-form-button {
   margin-top: 45px;
   border-radius: 30px;
   width: 200px;
   height: 50px;
   font-size: 1.5em;
+}
+
+@media all and (max-width: 632px) {
+  .search-card-wrapper .card-input-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .search-card-wrapper .journey_date, .search-card-wrapper .city-input-search{
+    width: 100%;
+    height: 40px;
+  }
 }
