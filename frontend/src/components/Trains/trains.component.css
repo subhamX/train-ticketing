@@ -1,0 +1,42 @@
+.train-list-wrapper {
+    /* background: ; */
+    height: 100vh;
+    padding-bottom: 2vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+Divider {
+  border: 0;
+  clear:both;
+  display:block;
+  width: 96%;               
+  background-color:#FFFF00;
+  height: 1px;
+}
+
+.train-list-wrapper > h1 {
+    padding: 25px;
+}
+
+.train-list-item {
+    padding: 6px
+}
+
+.src-dest-row {
+    display: flex;
+    flex-direction: col;
+    justify-content: space-evenly;
+}
+
+.seats-col {
+    padding: 4vh 0 4vh 0;
+}
+
+.seats-col-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
