@@ -41,6 +41,7 @@ CREATE TABLE "train_instance" (
     "sleeper_coach_id" int   NULL,
     "sleeper_ticket_fare" decimal NOT NULL,
     "ac_ticket_fare" decimal NOT NULL,
+    "train_table_name" varchar(100) NOT NULL,
     CONSTRAINT "pk_train_instance" PRIMARY KEY (
         "train_number","journey_date"
      )
@@ -63,6 +64,7 @@ CREATE TABLE "tickets" (
     "pnr_number" varchar(10) DEFAULT generate_pnr_number(10, 'tickets', 'pnr_number'),
     "ticket_fare" decimal   NOT NULL,
     "train_number" varchar(6)   NOT NULL,
+    "journey_date" date NOT NULL,
     "username" varchar(30)   NOT NULL,
     "transaction_number" varchar(300)   NOT NULL,
     "time_of_booking" timestamptz   NOT NULL DEFAULT NOW(),
@@ -70,6 +72,24 @@ CREATE TABLE "tickets" (
         "pnr_number"
      )
 );
+
+
+-- stores all cancelled berths
+CREATE TABLE "cancelled_berths" (
+    "seat_number" int   NOT NULL,
+    "coach_number" varchar(10)   NOT NULL,
+    "pnr_number" varchar(10)   NULL,
+    "passenger_name" varchar(100)   NULL,
+    "passenger_age" int   NULL,
+    "passenger_gender" char   NULL,
+    "cancellation_timestamp" timestamptz not null DEFAULT now()
+    PRIMARY KEY (
+        "seat_number","coach_number"
+     )
+);
+
+ALTER TABLE "cancelled_berths" ADD CONSTRAINT "fk_cancelled_berths" FOREIGN KEY("pnr_number")
+REFERENCES "tickets" ("pnr_number");
 
 CREATE TABLE "users" (
     "username" varchar(30)   NOT NULL,

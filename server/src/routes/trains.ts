@@ -21,7 +21,9 @@ app.get('/list/', async (req, res) => {
     }
 })
 
-// returns the information of the train
+/**
+ * Route to return train metadata and all active, inactive and expired booking instances of the trains 
+ */
 app.get('/info/:train_number', async (req, res) => {
     try {
         let train_number = req.params.train_number
@@ -36,20 +38,34 @@ app.get('/info/:train_number', async (req, res) => {
                 message: `Invalid train number ${train_number}`,
             })
         }
+        let resp = await db.query(`select sleeper_ticket_fare, ac_ticket_fare, destination_arrival_time, 
+            source_departure_time, booking_end_time, booking_start_time, journey_date, 
+            CASE WHEN booking_end_time > $2 and booking_start_time < $2 then 'active' 
+            WHEN booking_start_time < $2 then 'inactive'
+            ELSE 'expired'
+            END as status
+            from train_instance
+            where train_number=$1`, [train_number, new Date()]
+        );
         res.send({
             error: false,
-            data: data.rows[0],
+            meta: data.rows[0],
+            instances: resp.rows
         })
     } catch (err) {
         res.send({ error: true, message: err.message })
     }
 })
 
-
+/**
+ * Route to return all global active booking instances 
+ */
 app.get('/current/active', async (req, res) => {
     try {
         let data = await db.query(
-            `SELECT * FROM train_instance WHERE booking_end_time > $1 AND booking_start_time <= $1`,
+            `SELECT train_number, journey_date, booking_start_time, booking_end_time, source_departure_time, destination_arrival_time,
+             sleeper_ticket_fare, ac_ticket_fare
+             FROM train_instance WHERE booking_end_time > $1 AND booking_start_time <= $1`,
             [new Date()]
         )
         if (data.rowCount === 0) {

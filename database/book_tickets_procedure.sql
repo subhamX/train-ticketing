@@ -58,8 +58,8 @@ begin
  	end if;
 	
 	-- Generate a new ticket
-	execute format('INSERT INTO tickets(ticket_fare, train_number, username, transaction_number)
-	values(%L, %L, %L, %L) returning *', ticket_fare, train_number, username, transaction_number)
+	execute format('INSERT INTO tickets(ticket_fare, train_number, username, transaction_number, journey_date)
+	values(%L, %L, %L, %L, %L) returning *', ticket_fare, train_number, username, transaction_number, journey_date)
 	into ticket_details;
 	
 	pnr_number=ticket_details.pnr_number;

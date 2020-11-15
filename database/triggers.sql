@@ -22,7 +22,7 @@ declare
 	i int;
     table_exist_flag boolean;
 begin
-
+    
     ac_coach_id=NEW.ac_coach_id;
     sleeper_coach_id=NEW.sleeper_coach_id;
     number_of_ac_coaches=NEW.number_of_ac_coaches;
@@ -51,6 +51,8 @@ begin
 
 
     train_table_name=train_table_name_PREFIX || '_' || NEW.train_number || '_' || to_char(NEW.journey_date,'ddmmyyyy');
+
+    NEW.train_table_name = train_table_name;
     -- create a new table named train_{train_number}_{DDMMYY}
     execute format(
         'create table %I(

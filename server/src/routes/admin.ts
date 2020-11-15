@@ -129,9 +129,9 @@ app.post('/addbookinginstance/', verifyToken, verifyAdmin, async (req, res) => {
 
         let responseMsg;
         if (response.rowCount) {
-            responseMsg = `Booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date} was successfully inserted`;
+            responseMsg = `Booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date.toDateString()} was successfully inserted`;
         } else {
-            responseMsg = `Something went wrong while adding a booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date}`;
+            responseMsg = `Something went wrong while adding a booking instance with Train Number ${instance.train_number} and Journey Date ${instance.journey_date.toDateString()}`;
         }
         res.send({
             error: false,
