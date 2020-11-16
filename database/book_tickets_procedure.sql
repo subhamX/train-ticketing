@@ -110,7 +110,7 @@ begin
             index=index+1;
         end loop;
 		-- update tickets count in train_instance
-		if type='A' then
+		if type='A%' then
 			execute format('UPDATE train_instance
 				SET available_ac_tickets=available_ac_tickets- %L
 				WHERE train_number=%L
