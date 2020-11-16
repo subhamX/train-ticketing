@@ -13,6 +13,7 @@ import citiesRoutes from './routes/cities';
 import ticketRoutes from './routes/tickets';
 import passport from 'passport';
 import cors from 'cors';
+import { pool } from './db';
 const app = Express()
 
 /**
@@ -29,6 +30,7 @@ const app = Express()
 //     })
 // }
 
+const pgSession = require('connect-pg-simple')(session);
 app.use(
     cors({
         origin: process.env.CLIENT_URL as string,
@@ -38,11 +40,17 @@ app.use(
 
 app.use(
     session({
+        store: new pgSession({
+            pool: pool,
+            tableName: 'session'
+        }),
+        saveUninitialized: false,
         secret: process.env.SESSION_SECRET as string,
         resave: false,
-        saveUninitialized: false,
+        cookie: { maxAge: 5 * 24 * 60 * 60 * 1000 }
     })
 );
+
 app.use(cookie_parser())
 app.use(bodyParser.json())
 require("./auth/passportConfig")(passport);

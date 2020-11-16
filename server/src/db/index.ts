@@ -9,7 +9,7 @@ const clientInfo = {
     password: process.env.PG_PASSWORD,
     port: (process.env.PG_PORT as unknown) as number,
 }
-const pool = new Pool(clientInfo)
+export const pool = new Pool(clientInfo)
 
 const query = (text: string, params?: any): Promise<QueryResult<any>> =>
     pool.query(text, params)
