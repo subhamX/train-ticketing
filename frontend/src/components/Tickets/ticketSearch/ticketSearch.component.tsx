@@ -1,10 +1,21 @@
-import React from "react";
-import { Card, Form, Input, Button, DatePicker, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Typography,
+  AutoComplete,
+  Alert,
+} from "antd";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 
 import Head from "../../Head/head.component";
 import "./ticketSearch.component.css";
+import { useDispatch, useSelector } from "react-redux";
+import { getCities } from "../../../services/actions/tickets";
 
 function TicketSearch() {
   return (
@@ -21,7 +32,17 @@ export default TicketSearch;
 
 function SearchCard() {
   const history = useHistory();
+  const [form] = Form.useForm();
+  const [errors, setErrors] = useState("");
+  const cities = useSelector((state: any) => state.ticketsReducer.cities);
+
+  const dispatch = useDispatch();
+
   const HandleSubmit = (payload: any) => {
+    if (payload.source === payload.destination) {
+      setErrors("Source and Destination cannot be same");
+      return;
+    }
     let date = moment(payload.journey_date).format("DD-MM-YYYY");
     payload.journey_date = date;
     history.push(
@@ -29,6 +50,14 @@ function SearchCard() {
     );
   };
 
+  useEffect(() => {
+    dispatch(getCities());
+  }, [dispatch]);
+  const onChangeHandler = (key: string, value: any) => {
+    let newObject: any = {};
+    newObject[key] = value;
+    form.setFieldsValue(newObject);
+  };
   return (
     <div>
       <Card
@@ -41,7 +70,13 @@ function SearchCard() {
           >
             Search Trains
           </Typography.Title>
+          {errors ? (
+            <Form.Item>
+              <Alert message={errors} type="error" />
+            </Form.Item>
+          ) : null}
           <Form
+            form={form}
             name="search_trains"
             className="search-form"
             autoComplete="off"
@@ -57,7 +92,12 @@ function SearchCard() {
                       { required: true, message: "Please select a City!" },
                     ]}
                   >
-                    <Input placeholder="City name" className='city-input-search' />
+                    <AutoInput
+                      cities={cities}
+                      placeholder="Source City"
+                      classNme="source"
+                      onChangeHandler={onChangeHandler}
+                    />
                   </Form.Item>
                 </div>
                 <div className="dest-input">
@@ -68,7 +108,12 @@ function SearchCard() {
                       { required: true, message: "Please select a city!" },
                     ]}
                   >
-                    <Input placeholder="City name" className='city-input-search'/>
+                    <AutoInput
+                      cities={cities}
+                      placeholder="City name"
+                      classNme="destination"
+                      onChangeHandler={onChangeHandler}
+                    />
                   </Form.Item>
                 </div>
                 <div className="date-input">
@@ -83,10 +128,10 @@ function SearchCard() {
                     ]}
                   >
                     <DatePicker
-                    className='journey_date'
-                      disabledDate={(current) => (
+                      className="journey_date"
+                      disabledDate={(current) =>
                         current && current < moment().subtract(1, "day")
-                      )}
+                      }
                     />
                   </Form.Item>
                 </div>
@@ -107,3 +152,35 @@ function SearchCard() {
     </div>
   );
 }
+
+const { Option } = AutoComplete;
+
+const AutoInput = ({ cities, classNme, placeholder, onChangeHandler }: any) => {
+  const [result, setResult] = useState<string[]>([]);
+  const handleSearch = (value: string) => {
+    let res: string[] = [];
+    if (!value) {
+      res = [];
+    } else {
+      res = cities.filter((e: string) => {
+        return e.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+      });
+    }
+    console.log(res);
+    setResult(res);
+  };
+  return (
+    <AutoComplete
+      onChange={(e) => onChangeHandler(classNme, e)}
+      onSearch={handleSearch}
+      placeholder={placeholder}
+      className={classNme}
+    >
+      {result.map((email: string) => (
+        <Option key={email} value={email}>
+          {email}
+        </Option>
+      ))}
+    </AutoComplete>
+  );
+};

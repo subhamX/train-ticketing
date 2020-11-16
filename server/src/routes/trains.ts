@@ -40,7 +40,7 @@ app.get('/info/:train_number', async (req, res) => {
         }
         let resp = await db.query(`select booking_end_time, booking_start_time, journey_date, 
             CASE WHEN booking_end_time > $2 and booking_start_time < $2 then 'active' 
-            WHEN booking_start_time < $2 then 'inactive'
+            WHEN booking_start_time > $2 then 'inactive'
             ELSE 'expired'
             END as status
             from train_instance

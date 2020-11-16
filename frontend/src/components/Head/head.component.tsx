@@ -28,6 +28,8 @@ function Head() {
         return "4";
       case "/admin/":
         return "admin";
+      case "/tickets/search/":
+        return "tickets_search";
       default:
         return "1";
     }
@@ -86,6 +88,10 @@ function NavMenu({ defaultKey, md }: any) {
       <Menu.Item key="2">
         <Link to="/trains/">Trains</Link>
       </Menu.Item>
+      <Menu.Item key="tickets_search">
+        <Link to="/tickets/search/">Book Tickets</Link>
+      </Menu.Item>
+
       {user && user.is_admin ? (
         <>
           <Menu.Item key="admin">

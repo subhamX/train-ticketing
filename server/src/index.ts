@@ -7,6 +7,7 @@ import authRoutes from './auth/index';
 import userRoutes from './routes/user';
 import adminRoutes from './routes/admin';
 import coachesRoute from './routes/coaches';
+import citiesRoutes from './routes/cities';
 
 
 import ticketRoutes from './routes/tickets';
@@ -56,6 +57,8 @@ app.use('/auth/', authRoutes);
 app.use('/coaches/', coachesRoute);
 app.use('/users/', userRoutes);
 app.use('/admin/', adminRoutes);
+app.use('/cities/', citiesRoutes);
+
 
 app.get('/', (req: Request, res: Response) => {
 

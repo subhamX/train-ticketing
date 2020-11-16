@@ -69,9 +69,9 @@ function App() {
         <Route path="/tickets/search/" exact>
           <TicketSearch />
         </Route>
-        {/* <Route path="/tickets/listing">
+        <Route path="/tickets/listing/">
           <TicketSearchResults />
-        </Route> */}
+        </Route>
         <Route path="/" component={Landing} />
       </Switch>
     </BrowserRouter>
