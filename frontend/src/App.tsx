@@ -8,6 +8,7 @@ import Train from "./components/Trains/trains.component";
 import TrainInfo from "./components/Trains/TrainInfo/trainInfo.component";
 import TicketSearch from "./components/Tickets/ticketSearch/ticketSearch.component";
 import TicketSearchResults from "./components/Tickets/ticketSearchResult/ticketSearchResult.component";
+import BookTickets from "./components/Tickets/book/book.component";
 import { useDispatch } from "react-redux";
 import { checkUserAuthStatus } from "./services/actions/auth";
 import NonAuthRoute from "./components/NonAuthRoute/nonAuthRoute";
@@ -69,6 +70,10 @@ function App() {
         <Route path="/tickets/search/" exact>
           <TicketSearch />
         </Route>
+
+        <PrivateRoute adminRoute={true} exact path="/tickets/book/">
+          <BookTickets />
+        </PrivateRoute>
         <Route path="/tickets/listing/">
           <TicketSearchResults />
         </Route>

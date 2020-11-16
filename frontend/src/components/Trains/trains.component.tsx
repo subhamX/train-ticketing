@@ -61,7 +61,7 @@ function AllTrains() {
                         {train_instance_loading ? (
                           <Spin tip="Loading Trains"></Spin>
                         ) : (
-                          <TrainInstances trainNumber={train.train_number} />
+                          <TrainInstances trainNumber={train.train_number} {...train}  history={history} />
                         )}
                       </Panel>
                     );
@@ -79,7 +79,8 @@ export default AllTrains;
 
 let keyStyle: CSSProperties = { fontWeight: "bold" };
 
-function TrainInstances({ trainNumber }: any) {
+function TrainInstances(props: any) {
+  let { trainNumber, history, ...extra } = props;
   const dispatch = useDispatch();
   const { instances, loaded } = useSelector((state: any) => {
     return {
@@ -196,7 +197,15 @@ function TrainInstances({ trainNumber }: any) {
                     <hr />
                     {data.status === "active" ? (
                       <Col span={24}>
-                        <Button type="primary">Book Now</Button>
+                        <Button type="primary" onClick={() => {
+                          history.push({
+                            pathname:'/tickets/book/',
+                            state: {
+                              ...extra,
+                              ...data
+                            }
+                          })
+                        }}>Book Now</Button>
                       </Col>
                     ) : null}
                   </Row>

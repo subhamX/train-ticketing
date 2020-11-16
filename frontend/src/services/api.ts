@@ -38,3 +38,19 @@ export const addNewCoach = (payload: { name: String; description: String, compos
 export const queryTrainsInstances = (payload: { source: String; destination: String, date: String }) => axios.get(`${url}/trains/current/active/?source=${payload.source}&destination=${payload.destination}&date=${payload.date}`, { withCredentials: true });
 
 
+export interface BookTicketSchema {
+    ticket_fare: number;
+    journey_date: Date;
+    train_number: String;
+    transaction_number: String;
+    type: String;
+    passengers: {
+        passenger_age: Number;
+        passenger_name: String;
+        passenger_gender: String;
+    };
+    booking_type: Number;
+}
+export const bookTicket = (payload: BookTicketSchema) => axios.post(`${url}/tickets/book/`, payload, { withCredentials: true });
+
+

@@ -79,8 +79,8 @@ async function getPaymentStatus(numberOfPassengers: number,
 ): Promise<transactionVerdict> {
     let attribute = `${ticket_type === 'S' ? 'sleeper' : 'ac'}_ticket_fare`;
     // get ticket fare
-    let resp = await db.query(`SELECT ${attribute} FROM train_instance WHERE train_number=$1 and journey_date=$2`,
-        [trainNumber, journeyDate]);
+    let resp = await db.query(`SELECT ${attribute} FROM trains WHERE train_number=$1`,
+        [trainNumber]);
 
     if (resp.rowCount === 0) {
         return { verdict: "INVALID_TRANSACTION", "message": `Invalid train number ${trainNumber} and journey_date ${journeyDate.toDateString()}` };
