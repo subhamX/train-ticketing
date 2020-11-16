@@ -7,44 +7,62 @@ import {
   Typography,
   InputNumber,
   DatePicker,
+  Space,
 } from "antd";
 import "./addNewBookingInstance.component.css";
 import Head from "../../Head/head.component";
 import { useHistory } from "react-router-dom";
-import moment from 'moment';
+import moment from "moment";
 import { addNewBookingInstance } from "../../../services/api";
+const { RangePicker } = DatePicker;
 
 function AddNewBookingInstance() {
   const [errors, setErrors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const [dates, setdates] = useState([] as any);
   const history = useHistory();
 
-  const handleSubmit = async (payload: any) => {
+  const handleSubmit = async (data: any) => {
     try {
       setIsLoading(true);
-      let endTime=moment(payload.booking_end_time);
-      let startTime=moment(payload.booking_start_time);
-      if(startTime.isAfter(endTime)){
-        setErrors('Start Time should be less than end time');
+      let {booking_timeline, ...payload}=data;
+      let endTime = moment(dates[1]);
+      let startTime = moment(dates[0]);
+      if (startTime.isAfter(endTime)) {
+        setErrors("Start Time should be less than end time");
+        return;
       }
-      payload.booking_end_time=endTime.toISOString();
-      payload.booking_start_time=startTime.toISOString();
+      payload.booking_end_time = endTime.toISOString();
+      payload.booking_start_time = startTime.toISOString();
 
-      console.log(payload)
       let res = await addNewBookingInstance(payload);
       if (res.data.error === true) {
         throw Error(res.data.message);
       }
+      setIsLoading(false);
+
       history.push("/");
     } catch (err) {
       setErrors(err.message);
+      setIsLoading(false);
     }
-    setIsLoading(false);
-
   };
 
   const [form] = Form.useForm();
+
+  function onOk(value: any) {
+    let booking_start_time = null,
+      booking_end_time = null;
+    if (value[0])
+      booking_start_time = moment(value[0]._d).format("YYYY-MM-DD HH:mm:ss");
+    if (value[1])
+      booking_end_time = moment(value[1]._d).format("YYYY-MM-DD HH:mm:ss");
+    setdates([booking_start_time, booking_end_time]);
+    form.setFieldsValue({
+      booking_timeline: value[0] && value[1],
+    });
+  }
   return (
     <div>
       <Head />
@@ -85,8 +103,7 @@ function AddNewBookingInstance() {
               },
             ]}
           >
-                        <DatePicker/>
-
+            <DatePicker />
           </Form.Item>
 
           <Form.Item
@@ -139,29 +156,25 @@ function AddNewBookingInstance() {
           >
             <Input />
           </Form.Item>
+
           <Form.Item
-            name="booking_start_time"
-            label="Booking Start Time"
+            name="booking_timeline"
+            label="Booking Timeline"
             rules={[
               {
                 required: true,
-                message: "Please enter a valid value!",
+                message: "Please choose a valid journey duration!",
               },
             ]}
           >
-            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-          </Form.Item>
-          <Form.Item
-            name="booking_end_time"
-            label="Booking End Time"
-            rules={[
-              {
-                required: true,
-                message: "Please enter a valid value!",
-              },
-            ]}
-          >
-            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+            <Space direction="vertical" size={12}>
+              <RangePicker
+                showTime={{ format: "HH:mm" }}
+                format="YYYY-MM-DD HH:mm"
+                onOk={onOk}
+                placeholder={["Booking Start Time", "Booking End Time"]}
+              />
+            </Space>
           </Form.Item>
 
           <Form.Item>

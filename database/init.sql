@@ -17,6 +17,7 @@ CREATE TABLE "coaches" (
     "name" varchar(200)   NOT NULL,
     "description" varchar(500)   NOT NULL,
     "composition_table" varchar(300)   NOT NULL,
+    "seats_count" int not null,
     CONSTRAINT "pk_coaches" PRIMARY KEY (
         "coach_id"
      )
@@ -42,6 +43,8 @@ CREATE TABLE "train_instance" (
     "ac_coach_id" int   NULL,
     "sleeper_coach_id" int   NULL,
     "train_table_name" varchar(100) NOT NULL,
+    "available_ac_tickets" int  NOT NULL,
+    "available_sleeper_tickets" int  NOT NULL,
     CONSTRAINT "pk_train_instance" PRIMARY KEY (
         "train_number","journey_date"
      )

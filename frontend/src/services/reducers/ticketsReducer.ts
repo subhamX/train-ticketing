@@ -6,7 +6,7 @@ export interface StateStore {
 
 // Reducer
 const initState: StateStore = {
-    cities: []
+    cities: [],
 };
 
 let statusReducer = (state = initState, action: any) => {

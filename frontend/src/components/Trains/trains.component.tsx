@@ -56,18 +56,7 @@ function AllTrains() {
                         style={container}
                         showArrow={false}
                         key={train.train_number}
-                        header={
-                          <TrainListItem
-                            history={history}
-                            train_num={train.train_number}
-                            train_name={train.train_name}
-                            dest={train.destination}
-                            src={train.source}
-                            journey_duration={train.journey_duration}
-                            sleeper_ticket_fare={train.sleeper_ticket_fare}
-                            ac_ticket_fare={train.ac_ticket_fare}
-                          />
-                        }
+                        header={<TrainListItem history={history} {...train} />}
                       >
                         {train_instance_loading ? (
                           <Spin tip="Loading Trains"></Spin>
@@ -101,7 +90,6 @@ function TrainInstances({ trainNumber }: any) {
       instances: state.trainsReducer.instances[trainNumber],
     };
   });
-
   useEffect(() => {
     dispatch(getTrainInstance(trainNumber));
   }, [dispatch, trainNumber]);
@@ -127,6 +115,40 @@ function TrainInstances({ trainNumber }: any) {
                         </Col>
                         <Col span={16}>
                           {new Date(data.journey_date).toLocaleDateString()}
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span={24}>
+                      <Row>
+                        <Col style={keyStyle} span={8}>
+                          Available AC Tickets:
+                        </Col>
+                        <Col span={16}>
+                          <Tag
+                            color={
+                              data.available_ac_tickets > 0 ? "green" : "red"
+                            }
+                          >
+                            {data.available_ac_tickets}
+                          </Tag>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span={24}>
+                      <Row>
+                        <Col style={keyStyle} span={8}>
+                          Sleeper AC Tickets:
+                        </Col>
+                        <Col span={16}>
+                          <Tag
+                            color={
+                              data.available_sleeper_tickets > 0
+                                ? "green"
+                                : "red"
+                            }
+                          >
+                            {data.available_sleeper_tickets}
+                          </Tag>
                         </Col>
                       </Row>
                     </Col>
@@ -189,13 +211,14 @@ function TrainInstances({ trainNumber }: any) {
 
 function TrainListItem({
   history,
-  train_num,
+  train_number:train_num,
   train_name,
-  src,
-  dest,
+  source:src,
+  destination:dest,
   journey_duration,
   sleeper_ticket_fare,
   ac_ticket_fare,
+  source_departure_time,
 }: any) {
   const rowStyle = {
     padding: "6px",
@@ -264,7 +287,14 @@ function TrainListItem({
               `}</Col>
                 </Row>
               </Col>
-
+              <Col span={24}>
+                <Row>
+                  <Col style={keyStyle} span={8}>
+                    Source Departure Time:
+                  </Col>
+                  <Col span={16}>{source_departure_time} Hrs</Col>
+                </Row>
+              </Col>
               <Col span={24}>
                 <Row>
                   <Col style={keyStyle} span={8}>

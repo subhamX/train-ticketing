@@ -38,7 +38,8 @@ app.get('/info/:train_number', async (req, res) => {
                 message: `Invalid train number ${train_number}`,
             })
         }
-        let resp = await db.query(`select booking_end_time, booking_start_time, journey_date, 
+        let resp = await db.query(`select booking_end_time, booking_start_time, journey_date,
+            available_ac_tickets, available_sleeper_tickets,
             CASE WHEN booking_end_time > $2 and booking_start_time < $2 then 'active' 
             WHEN booking_start_time > $2 then 'inactive'
             ELSE 'expired'
@@ -61,16 +62,43 @@ app.get('/info/:train_number', async (req, res) => {
  */
 app.get('/current/active', async (req, res) => {
     try {
-        let data = await db.query(
-            `SELECT train_number, journey_date, booking_start_time, booking_end_time,
-             sleeper_ticket_fare, ac_ticket_fare
+        let { source, destination, date } = req.query;
+        let data;
+        let queryResult=false;
+        if (source && destination && date) {
+            queryResult=true;
+
+            data = await db.query(
+                `SELECT train_instance.train_number, journey_date, booking_start_time, booking_end_time,
+            sleeper_ticket_fare, ac_ticket_fare,
+            journey_duration, available_ac_tickets,available_sleeper_tickets,
+            source_departure_time, source, destination, train_name
+            FROM train_instance, trains WHERE booking_end_time > $1 AND booking_start_time <= $1
+            AND source LIKE $2
+            AND destination LIKE $3
+            AND trains.train_number=train_instance.train_number
+            AND journey_date=$4`,
+                [new Date(), `%${source}%`, `%${destination}%`, date]
+            );
+        } else {
+            data = await db.query(
+                `SELECT train_number, journey_date, booking_start_time, booking_end_time,
+             available_ac_tickets, available_sleeper_tickets
              FROM train_instance WHERE booking_end_time > $1 AND booking_start_time <= $1`,
-            [new Date()]
-        )
+                [new Date()]
+            );
+        }
+
         if (data.rowCount === 0) {
+            let message;
+            if(queryResult){
+                message=`No trains available for booking with query Source:${source}, Destination: ${destination}, Date: ${date}`;
+            }else{
+                message=`No trains available for booking`
+            }
             return res.send({
                 error: true,
-                message: `No trains available for booking`,
+                message,
             })
         }
         return res.send({
@@ -82,5 +110,7 @@ app.get('/current/active', async (req, res) => {
         return res.send({ error: true, message: err.message })
     }
 })
+
+
 
 export default app

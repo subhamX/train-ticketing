@@ -21,6 +21,7 @@ declare
     berth record;
 	i int;
     table_exist_flag boolean;
+    seat_count int;
 begin
     
     ac_coach_id=NEW.ac_coach_id;
@@ -48,6 +49,20 @@ begin
     if not table_exist_flag then
         raise exception 'Invalid Sleeper Coach ID %', ac_coach_id;
     end if;
+
+    -- adding available_ac_tickets
+    execute format('select seats_count
+        from coaches 
+        where coach_id=%L', ac_coach_id)
+    into seat_count;
+    NEW.available_ac_tickets=NEW.number_of_ac_coaches * seat_count;
+
+    -- adding available_sleeper_tickets
+    execute format('select seats_count
+        from coaches 
+        where coach_id=%L', sleeper_coach_id)
+    into seat_count;
+    NEW.available_sleeper_tickets=NEW.number_of_sleeper_coaches * seat_count;
 
 
     train_table_name=train_table_name_PREFIX || '_' || NEW.train_number || '_' || to_char(NEW.journey_date,'ddmmyyyy');
@@ -203,6 +218,7 @@ begin
         NEW.composition_table=coach_composition_table_name;
     end if;
 	
+    NEW.seats_count=0;
 	return NEW;
 end
 $$;
@@ -213,9 +229,8 @@ create trigger new_coach_instance_trigger
     execute procedure on_coaches_insert();
 
 
--- TRIGGER 3: if coach_composition is changed then it insert seats into 
--- all train_{train_number}_{DDMMYYYY} tables inside train_instances 
--- allows addition of records but doesn't allow deletion
+-- TRIGGER 3: if coach_composition is changed it
+--  updates the seats_count in coaches table
 
 -- *NOTE: add this trigger on the coach_composition_{coach_id} table whenever created
 -- * TRIGGER 2 binds this trigger;
@@ -226,75 +241,20 @@ as
 $$
 declare
 	table_name varchar(400);
-	temp integer;
-	i record;
-	j integer;
-	ac_coach_PREFIX char(1):='A';
-	sleeper_coach_PREFIX char(1):='S';
-    train_table_name_PREFIX varchar(50):='train_';
-	train_table_name varchar(1000);
-    coach_number varchar(100);
-    pnr_number varchar(400);
 begin
-    -- prohibiting user from deleting
-    if NEW is NULL then
-        raise exception 'Deleting a record is prohibited. Consider creating a new composition table!';
-    end if;
-
 	table_name:=TG_TABLE_NAME;
 
-    -- handling for ac coaches
-	for i in (select number_of_ac_coaches, train_number, journey_date
-		 from train_instance, coaches
-		 where coaches.coach_id=train_instance.ac_coach_id
-		 and composition_table=TG_TABLE_NAME)
-	loop
-    	train_table_name=train_table_name_PREFIX || i.train_number || '_' || to_char(i.journey_date,'ddmmyyyy');
-		j=0;
-		temp:=i.number_of_ac_coaches;
-		while j<temp 
-		loop
-            coach_number=ac_coach_PREFIX || (j+1);
-            -- insert
-            execute format('INSERT INTO %I(
-                seat_number,
-                coach_number                    
-                )
-                VALUES(%L, %L)',
-                train_table_name,
-                NEW.berth_number,
-                coach_number
-            );
-            raise info 'INSERTING: % % in table %', NEW.berth_number, coach_number, train_table_name;
-			j=j+1;
-		end loop;
-	end loop;
-
-    -- handling for sleeper coaches
-    for i in (select number_of_sleeper_coaches, train_number, journey_date
-		 from train_instance, coaches
-		 where coaches.coach_id=train_instance.sleeper_coach_id
-		 and composition_table=TG_TABLE_NAME)
-	loop
-    	train_table_name=train_table_name_PREFIX || i.train_number || '_' || to_char(i.journey_date,'ddmmyyyy');
-		j=0;
-		temp:=i.number_of_sleeper_coaches;
-		while j<temp 
-		loop
-            coach_number=sleeper_coach_PREFIX || (1+j);
-            execute format('INSERT INTO %I(
-                seat_number,
-                coach_number                    
-                )
-                VALUES(%L, %L)',
-                train_table_name,
-                NEW.berth_number,
-                coach_number
-            );
-            raise info 'INSERTING: % % in table %', NEW.berth_number, coach_number, train_table_name;
-			j=j+1;
-		end loop;
-	end loop;
+    if NEW is NULL then
+        -- deleting a seat
+        update coaches
+        set seats_count = seats_count-1
+        where composition_table=table_name;
+    else
+        -- inserting a seat
+        update coaches
+        set seats_count = seats_count+1
+        where composition_table=table_name;
+    end if;
 
     return NEW;
 end

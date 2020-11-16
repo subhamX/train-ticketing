@@ -30,7 +30,7 @@ function AddTrain() {
       setIsLoading(true);
       let res = await addNewTrain({
         train_name: payload.train_name,
-        train_number: payload.train_number,
+        train_number: payload.train_number.trim(),
         source: payload.source,
         destination: payload.destination,
         source_departure_time: payload.source_departure_time,
@@ -57,7 +57,7 @@ function AddTrain() {
 
     let journeyDur = moment.duration(destinationArrival?.diff(sourceDeparture));
     form.setFieldsValue({
-      source_departure_time: sourceDeparture?.format("hh:mm:ss"),
+      source_departure_time: sourceDeparture?.format("HH:mm:ss"),
       journey_duration: journeyDur.format(
         "d [days], h [hours], m [minutes], s [seconds]"
       ),

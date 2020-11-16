@@ -109,6 +109,22 @@ begin
 			passengers[index]=instance;
             index=index+1;
         end loop;
+		-- update tickets count in train_instance
+		if type='A' then
+			execute format('UPDATE train_instance
+				SET available_ac_tickets=available_ac_tickets- %L
+				WHERE train_number=%L
+				AND journey_date=%L', 
+				array_length(passengers, 1),
+				train_number, journey_date);
+		else
+			execute format('UPDATE train_instance
+				SET available_sleeper_tickets=available_sleeper_tickets- %L
+				WHERE train_number=%L
+				AND journey_date=%L', 
+				array_length(passengers, 1),
+				train_number, journey_date);
+		end if;
 	else
 		raise exception 'Method not yet incorporated!, Passenger: %', instance;
 	end if;

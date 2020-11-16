@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Card,
   Form,
-  Input,
   Button,
   DatePicker,
   Typography,
@@ -30,6 +29,13 @@ function TicketSearch() {
 
 export default TicketSearch;
 
+function extractStationCode(name:string){
+  let code:any=(name.match(/(\(\w+\))/)as any) ;
+  if(code==null){
+    return name;
+  }
+  return code[0].slice(1, code[0].length-1)
+}
 function SearchCard() {
   const history = useHistory();
   const [form] = Form.useForm();
@@ -45,8 +51,9 @@ function SearchCard() {
     }
     let date = moment(payload.journey_date).format("DD-MM-YYYY");
     payload.journey_date = date;
+    
     history.push(
-      `listing?source=${payload.source}&dest=${payload.destination}&date=${payload.journey_date}`
+      `/tickets/listing?source=${extractStationCode(payload.source)}&dest=${extractStationCode(payload.destination)}&date=${payload.journey_date}`
     );
   };
 
@@ -166,7 +173,6 @@ const AutoInput = ({ cities, classNme, placeholder, onChangeHandler }: any) => {
         return e.toLowerCase().indexOf(value.toLowerCase()) !== -1;
       });
     }
-    console.log(res);
     setResult(res);
   };
   return (
