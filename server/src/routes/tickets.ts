@@ -107,7 +107,7 @@ async function getPaymentStatus(numberOfPassengers: number,
 
 
 // route to book ticket
-app.post('/book', verifyToken, async (req, res) => {
+app.post('/book/', verifyToken, async (req, res) => {
     let instance: TicketInstance = req.body;
     let username = (req.user as UserSchema).username;
 
@@ -280,7 +280,8 @@ app.get('/all/', verifyToken, async (req, res) => {
         let resp = await db.query(`select journey_duration, source_departure_time, destination, source, train_name, time_of_booking, transaction_number, journey_date, tickets.train_number, ticket_fare, pnr_number
         from tickets, trains
         where tickets.train_number=trains.train_number
-        and username=$1`,
+        and username=$1
+        order by time_of_booking desc;`,
             [username]
         );
 

@@ -72,7 +72,7 @@ function AllTrains() {
             <div className="train-list-item">
               {trains &&
                 trains.map((train: any) => {
-                  return <TrainListItem {...train} />;
+                  return <TrainListItem key={train.train_number} {...train} />;
                 })}
             </div>
           </>
@@ -86,25 +86,26 @@ export default AllTrains;
 
 let keyStyle: CSSProperties = { fontWeight: "bold" };
 
-function TrainListItem({
-  history,
-  train_number: train_num,
-  train_name,
-  source: src,
-  destination: dest,
-  journey_duration,
-  sleeper_ticket_fare,
-  ac_ticket_fare,
-  journey_date,
-  booking_end_time,
-  booking_start_time,
-  available_sleeper_tickets,
-  available_ac_tickets,
-}: any) {
+function TrainListItem(props: any) {
+  let {
+    train_number: train_num,
+    train_name,
+    source: src,
+    destination: dest,
+    journey_duration,
+    sleeper_ticket_fare,
+    ac_ticket_fare,
+    journey_date,
+    booking_end_time,
+    booking_start_time,
+    available_sleeper_tickets,
+    available_ac_tickets,
+  } = props;
   const rowStyle = {
     padding: "6px",
     fontSize: "1.1em",
   };
+  const history = useHistory();
 
   return (
     <Card bodyStyle={{ padding: "12px 12px 12px 12px" }} hoverable={true}>
@@ -237,7 +238,19 @@ function TrainListItem({
                 </Col>
                 <hr />
                 <Col span={24}>
-                  <Button type="primary">Book Now</Button>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      history.push({
+                        pathname: "/tickets/book/",
+                        state: {
+                          ...props,
+                        },
+                      });
+                    }}
+                  >
+                    Book Now
+                  </Button>
                 </Col>
               </Row>
             </div>

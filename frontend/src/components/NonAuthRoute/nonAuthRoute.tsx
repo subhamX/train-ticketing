@@ -12,12 +12,12 @@ function NonAuthRoute({ children, ...rest }: any) {
         !user ? (
           children
         ) : (
-          <Redirect
-            to={{
-              pathname: "/",
-              state: { from: location },
-            }}
-          />
+            <Redirect
+              to={{
+                pathname: "/",
+                state: { from: location },
+              }}
+            />
         )
       }
     />

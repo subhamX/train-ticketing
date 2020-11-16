@@ -45,7 +45,8 @@ app.get('/info/:train_number', async (req, res) => {
             ELSE 'expired'
             END as status
             from train_instance
-            where train_number=$1`, [train_number, new Date()]
+            where train_number=$1
+            order by journey_date`, [train_number, new Date()]
         );
         return res.send({
             error: false,
@@ -77,7 +78,8 @@ app.get('/current/active', async (req, res) => {
             AND source LIKE $2
             AND destination LIKE $3
             AND trains.train_number=train_instance.train_number
-            AND journey_date=$4`,
+            AND journey_date=$4
+            order by journey_date`,
                 [new Date(), `%${source}%`, `%${destination}%`, date]
             );
         } else {

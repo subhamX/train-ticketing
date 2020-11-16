@@ -48,10 +48,10 @@ function BookTickets() {
   const [errors, setErrors] = useState("");
 
   const location = useLocation();
-  console.log(Object.keys(location.state as any));
   const data: dataSchema = location.state as any;
 
   useEffect(() => {
+    console.log(data);
     if (!data.train_number || !data.journey_date) {
       message.error(`Invalid Access`, 4);
       setTimeout(() => {

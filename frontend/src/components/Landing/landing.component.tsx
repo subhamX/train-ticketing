@@ -18,7 +18,7 @@ function AppView() {
           <div className="keypoints">
             <p className="point">Choose which seat to book</p>
             <p className="point">Easy cancellation</p>
-            <Link to="/auth/login/">
+            <Link to="/tickets/search/">
               <Button className='action-btn' type="primary" size="large" shape="round" >
                 Book Now
               </Button>
