@@ -174,15 +174,16 @@ function BookTickets() {
                 ]}
               >
                 {(fields, { add, remove }, { errors }) => (
-                  <>
+                  <div className='main-wrapper'>
                     {fields.map((field) => {
                       return (
                         <Space
                           key={field.key}
                           align="baseline"
-                          className="passenger_instance"
+                          className="passenger_instance_wrapper"
                         >
                           <Form.Item
+                          className='passenger_instance'
                             shouldUpdate={(prevValues, curValues) =>
                               prevValues.area !== curValues.area ||
                               prevValues.sights !== curValues.sights
@@ -226,8 +227,7 @@ function BookTickets() {
                             rules={[{ required: true }]}
                           >
                             <Select
-                              placeholder="Select a option and change input text above"
-                              // onChange={onGenderChange}
+                              placeholder="Select a option"
                               allowClear
                             >
                               <Option value="male">male</Option>
@@ -256,7 +256,7 @@ function BookTickets() {
                         <Form.ErrorList errors={errors} />
                       </div>
                     </Form.Item>
-                  </>
+                  </div>
                 )}
               </Form.List>
 

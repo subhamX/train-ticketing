@@ -20,7 +20,6 @@ function Login() {
     try {
       setIsLoading(true);
       let res = await loginUser(payload);
-      console.log("Hello LoggedIn World 101", res);
       if (res.data.error === true) {
         throw Error(res.data.message);
       }

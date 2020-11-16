@@ -7,15 +7,20 @@ import { LOADING_END, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../constants";
  * Action to update the user instance in the store 
  */
 export const checkUserAuthStatus = () => async (dispatch: Dispatch) => {
-  let res = await getUserData();
-  if (res.data.error === false) {
-    // user is logged in
-    console.log("User is authenticated")
-    dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
-  } else {
-    console.log("User not authenticated")
+  try {
+    let res = await getUserData();
+    if (res.data.error === false) {
+      // user is logged in
+      console.log("User is authenticated")
+      dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
+    } else {
+      console.log("User not authenticated")
+    }
+    dispatch({ type: LOADING_END });
+  } catch (err) {
+    console.log(err);
+    message.error('Something went wrong!', 2);
   }
-  dispatch({ type: LOADING_END });
 }
 
 
@@ -26,7 +31,6 @@ export const checkUserAuthStatus = () => async (dispatch: Dispatch) => {
 export const logoutUser = () => async (dispatch: Dispatch) => {
   try {
     let res = await sendLogOutSignal();
-    console.log(res.data)
     if (res.data.error === false) {
       // user is successfully logged out
       dispatch({ type: LOGOUT_SUCCESS })
@@ -36,5 +40,6 @@ export const logoutUser = () => async (dispatch: Dispatch) => {
     }
   } catch (err) {
     console.log(err);
+    message.error('Something went wrong!', 2);
   }
 }

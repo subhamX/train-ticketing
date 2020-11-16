@@ -25,7 +25,6 @@ export const getAllTicketsAction = () => async (dispatch: Dispatch) => {
     try {
         dispatch({ type: TICKETS_LIST_LOADING })
         let resp = await getAllTickets();
-        console.log(resp);
         dispatch({ type: TICKETS_LIST_LOADED, tickets: resp.data.tickets })
     } catch (err) {
         console.log(err);
@@ -65,5 +64,6 @@ export const cancelTicketsAction = (payload: CancelTicketSchema) => async (dispa
         // successful;
     } catch (err) {
         console.log(err);
+        message.error('Something went wrong while cancelling the ticket', 2);
     }
 }

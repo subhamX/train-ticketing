@@ -19,7 +19,6 @@ function Register() {
     try {
       setIsLoading(true);
       let res = await registerUser(payload);
-      console.log("Hello World 101", res.data);
       if (res.data.error === true) {
         throw Error(res.data.message);
       }
