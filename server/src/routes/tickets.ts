@@ -231,10 +231,10 @@ app.get('/info/:id', verifyToken, async (req, res) => {
         let pnrNumber = req.params.id;
         Joi.assert(pnrNumber, Joi.string().alphanum().required())
         pnrNumber = pnrNumber.toLowerCase();
-        let resp = await db.query(`select pnr_number, tickets.train_number, tickets.journey_date, train_table_name,
-            train_instance.source_departure_time, train_instance.destination_arrival_time
-            from tickets, train_instance
-            where tickets.train_number=train_instance.train_number
+        let resp = await db.query(`select pnr_number, tickets.train_number, tickets.journey_date, train_table_name, trains.source_departure_time, trains.journey_duration
+            from trains, train_instance, tickets
+            where trains.train_number=train_instance.train_number
+            and trains.train_number=tickets.train_number
             and tickets.journey_date=train_instance.journey_date
             and pnr_number=$1
             and username=$2`,
@@ -256,7 +256,7 @@ app.get('/info/:id', verifyToken, async (req, res) => {
             from cancelled_berths
             where pnr_number=$1
             union
-            select *, 0 as is_cancelled
+            select *, NULL as cancellation_timestamp, 0 as is_cancelled
             from ${trainTableName}
             where pnr_number=$1;`,
             [pnrNumber]
@@ -277,14 +277,17 @@ app.get('/info/:id', verifyToken, async (req, res) => {
 app.get('/all/', verifyToken, async (req, res) => {
     try {
         let username = (req.user as UserSchema).username;
-        let resp = await db.query(`select * from tickets where username=$1`,
+        let resp = await db.query(`select journey_duration, source_departure_time, destination, source, train_name, time_of_booking, transaction_number, journey_date, tickets.train_number, ticket_fare, pnr_number
+        from tickets, trains
+        where tickets.train_number=trains.train_number
+        and username=$1`,
             [username]
         );
 
         res.send({
             error: false,
             username,
-            berths: resp.rows,
+            tickets: resp.rows,
         })
     } catch (err) {
         res.send({ error: true, message: err.message })

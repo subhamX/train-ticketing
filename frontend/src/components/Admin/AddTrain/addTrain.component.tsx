@@ -59,7 +59,7 @@ function AddTrain() {
     form.setFieldsValue({
       source_departure_time: sourceDeparture?.format("HH:mm:ss"),
       journey_duration: journeyDur.format(
-        "d [days], h [hours], m [minutes], s [seconds]"
+        "h [hours], m [minutes]"
       ),
       journey_timeline: journeyDur.toISOString(),
     });

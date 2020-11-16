@@ -18,7 +18,6 @@ function AllTrains() {
   let {
     trains,
     fetching_trains: is_loading,
-    fetching_train_instances: train_instance_loading,
   } = useSelector((state: any) => state.trainsReducer);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -58,11 +57,11 @@ function AllTrains() {
                         key={train.train_number}
                         header={<TrainListItem history={history} {...train} />}
                       >
-                        {train_instance_loading ? (
-                          <Spin tip="Loading Trains"></Spin>
-                        ) : (
-                          <TrainInstances trainNumber={train.train_number} {...train}  history={history} />
-                        )}
+                        <TrainInstances
+                          trainNumber={train.train_number}
+                          {...train}
+                          history={history}
+                        />
                       </Panel>
                     );
                   })}
@@ -98,7 +97,9 @@ function TrainInstances(props: any) {
   return (
     <div>
       {!loaded ? (
-        <Spin></Spin>
+        <div style={{textAlign: 'center'}}>
+          <Spin tip="Loading Train Instances"></Spin>
+        </div>
       ) : (
         <>
           {instances && instances.length === 0 ? (
@@ -138,7 +139,7 @@ function TrainInstances(props: any) {
                     <Col span={24}>
                       <Row>
                         <Col style={keyStyle} span={8}>
-                          Sleeper AC Tickets:
+                          Available Sleeper Tickets:
                         </Col>
                         <Col span={16}>
                           <Tag
@@ -197,15 +198,20 @@ function TrainInstances(props: any) {
                     <hr />
                     {data.status === "active" ? (
                       <Col span={24}>
-                        <Button type="primary" onClick={() => {
-                          history.push({
-                            pathname:'/tickets/book/',
-                            state: {
-                              ...extra,
-                              ...data
-                            }
-                          })
-                        }}>Book Now</Button>
+                        <Button
+                          type="primary"
+                          onClick={() => {
+                            history.push({
+                              pathname: "/tickets/book/",
+                              state: {
+                                ...extra,
+                                ...data,
+                              },
+                            });
+                          }}
+                        >
+                          Book Now
+                        </Button>
                       </Col>
                     ) : null}
                   </Row>
@@ -220,10 +226,10 @@ function TrainInstances(props: any) {
 
 function TrainListItem({
   history,
-  train_number:train_num,
+  train_number: train_num,
   train_name,
-  source:src,
-  destination:dest,
+  source: src,
+  destination: dest,
   journey_duration,
   sleeper_ticket_fare,
   ac_ticket_fare,
@@ -292,7 +298,7 @@ function TrainListItem({
                   </Col>
                   <Col span={16}>{`${moment
                     .duration(journey_duration)
-                    .format("d [days], h [hours], m [minutes], s [seconds]")}
+                    .format("h [hours], m [minutes]")}
               `}</Col>
                 </Row>
               </Col>

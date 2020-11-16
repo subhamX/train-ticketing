@@ -156,7 +156,7 @@ function TrainListItem({
                   </Col>
                   <Col span={16}>{`${moment
                     .duration(journey_duration)
-                    .format("d [days], h [hours], m [minutes], s [seconds]")}
+                    .format("h [hours], m [minutes]")}
               `}</Col>
                 </Row>
               </Col>

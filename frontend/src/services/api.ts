@@ -54,3 +54,12 @@ export interface BookTicketSchema {
 export const bookTicket = (payload: BookTicketSchema) => axios.post(`${url}/tickets/book/`, payload, { withCredentials: true });
 
 
+export const getAllTickets = () => axios.get(`${url}/tickets/all/`, { withCredentials: true });
+
+export const getTicketsInfo = (pnrNumber:string) => axios.get(`${url}/tickets/info/${pnrNumber}`, { withCredentials: true });
+
+export interface CancelTicketSchema{
+    pnr_number: string;
+    seats: [{ seat_number: Number, coach_number: String }]
+}
+export const cancelTickets = (payload: CancelTicketSchema) => axios.post(`${url}/tickets/cancel/`, payload, { withCredentials: true });

@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { Dispatch } from "redux";
 import { getUserData, sendLogOutSignal } from "../api";
 import { LOADING_END, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../constants";
@@ -29,6 +30,7 @@ export const logoutUser = () => async (dispatch: Dispatch) => {
     if (res.data.error === false) {
       // user is successfully logged out
       dispatch({ type: LOGOUT_SUCCESS })
+      message.success('Logout Successful', 2);
     } else {
       throw Error(res.data.message)
     }

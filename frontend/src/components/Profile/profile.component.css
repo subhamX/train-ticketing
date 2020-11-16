@@ -1,4 +1,35 @@
-.profile-card{
-    margin: auto;
-    width: 80%;
+.profile-card {
+  margin: auto;
+  width: 95%;
+  max-width: 800px;
+}
+.ticket_item span {
+  color: #17a2b8 !important;
+  font-weight: bold;
+}
+.ticket_item {
+  margin: 2px 0px;
+}
+.ticket_item_wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.ticket-wrapper {
+  margin: 10px 0px;
+}
+
+.ticket-wrapper .ant-list-item-meta {
+  margin: 2px;
+}
+
+.ticket-wrapper .ant-list-item-meta-avatar,
+.ticket-wrapper .ant-list-item-meta-title {
+  margin-bottom: 2px;
+}
+@media all and (max-width: 678px) {
+  .ticket_item_wrapper {
+    display: flex;
+    flex-direction: column;
+  }
 }
