@@ -30,6 +30,7 @@ const app = Express()
 //     })
 // }
 
+app.set('trust proxy', 1);
 
 const pgSession = require('connect-pg-simple')(session);
 app.use(
@@ -48,6 +49,7 @@ app.use(
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET as string,
         resave: false,
+        cookie: process.env.NODE_ENV === 'production' ? { secure: true, sameSite: 'none' } : {},
     })
 );
 
