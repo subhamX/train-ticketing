@@ -10,7 +10,7 @@ import {
   Alert,
   Descriptions,
 } from "antd";
-import { EnvironmentFilled } from "@ant-design/icons";
+import { EnvironmentFilled, HeatMapOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 
 import Head from "../Head/head.component";
@@ -56,7 +56,10 @@ function AllTrains() {
               />
             ) : null}
             <div className="train-list-item">
-              <Collapse>
+              <Collapse
+              bordered={false}
+              className='collapse_card_wrapper'
+              >
                 {trains &&
                   trains.map((train: any) => {
                     return (
@@ -84,7 +87,6 @@ function AllTrains() {
 }
 
 export default AllTrains;
-
 
 function TrainInstances(props: any) {
   let { trainNumber, history, ...extra } = props;
@@ -124,8 +126,8 @@ function TrainInstances(props: any) {
                 available_sleeper_tickets,
               } = data;
               return (
-                <Card style={{ fontSize: "15px" }} key={index}>
-                  <Descriptions layout="vertical" bordered={true}>
+                <Card style={{ fontSize: "15px", width: '90%', margin: 'auto' }} key={index} className='train_instance_card'>
+                  <Descriptions title={<div><HeatMapOutlined />{`   ${index+1}`}</div>} layout="vertical" bordered={true}>
                     <Descriptions.Item label="Available Sleeper Tickets Count:">
                       {available_sleeper_tickets}
                     </Descriptions.Item>
@@ -218,7 +220,11 @@ function TrainListItem({
   ) : null;
 
   return (
-    <Card bodyStyle={{ padding: "12px 12px 12px 12px" }} hoverable={true}>
+    <Card
+    hoverable
+      className="train_instance_card_wrapper"
+      bodyStyle={{ padding: "12px 12px 12px 12px" }}
+    >
       <Row style={rowStyle}>
         <Col span={20}>
           <Tag color="#108ee9" style={{ fontSize: "1em" }}>
@@ -250,7 +256,7 @@ function TrainListItem({
           </div>
         </Col>
       </Row>
-      <Col span={24} >
+      <Col span={24}>
         <div style={{}}>
           <Descriptions layout="vertical" bordered={true}>
             <Descriptions.Item label="Journey Duration:">{`${moment
@@ -267,11 +273,10 @@ function TrainListItem({
             </Descriptions.Item>
           </Descriptions>
         </div>
-        <br />
       </Col>
       <Col
         span={24}
-        style={{ color: "grey", fontStyle: "italic", textAlign: "center" }}
+        style={{ color: "grey", fontSize: '12px',  fontStyle: "italic", textAlign: "center", marginTop: '8px' }}
       >
         Tap on this card to look for available booking instances
       </Col>

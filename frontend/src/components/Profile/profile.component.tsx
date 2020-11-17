@@ -183,6 +183,10 @@ function UserProfile() {
                             </div>
 
                             <div className="ticket_item">
+                              <span>Refund Amount: </span>
+                              {item.refund_amount}
+                            </div>
+                            <div className="ticket_item">
                               <span>Transaction Number: </span>
                               {item.transaction_number.toUpperCase()}
                             </div>

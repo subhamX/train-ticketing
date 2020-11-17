@@ -204,7 +204,7 @@ app.post('/cancel/', verifyToken, async (req, res) => {
         coach_numbers = `array[${coach_numbers}]`;
         seat_numbers = `array[${seat_numbers}]`;
 
-        await db.query(`SELECT cancel_berths(
+        let resp = await db.query(`SELECT cancel_berths(
             pnr_num=>$1, 
             seats=>${seat_numbers}, 
             coach_numbers=>${coach_numbers},
@@ -212,7 +212,8 @@ app.post('/cancel/', verifyToken, async (req, res) => {
 
         res.send({
             error: false,
-            message: 'Berth Cancellation Successful'
+            message: 'Berth Cancellation Successful',
+            new_refund_amount: resp.rows[0]['cancel_berths'].split(',')[2].replace(')', '')
         })
 
     } catch (err) {
@@ -277,7 +278,7 @@ app.get('/info/:id', verifyToken, async (req, res) => {
 app.get('/all/', verifyToken, async (req, res) => {
     try {
         let username = (req.user as UserSchema).username;
-        let resp = await db.query(`select journey_duration, source_departure_time, destination, source, train_name, time_of_booking, transaction_number, journey_date, tickets.train_number, ticket_fare, pnr_number
+        let resp = await db.query(`select journey_duration, refund_amount, source_departure_time, destination, source, train_name, time_of_booking, transaction_number, journey_date, tickets.train_number, ticket_fare, pnr_number
         from tickets, trains
         where tickets.train_number=trains.train_number
         and username=$1

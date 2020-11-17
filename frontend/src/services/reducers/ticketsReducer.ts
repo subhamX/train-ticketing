@@ -49,8 +49,14 @@ let ticketsReducer = (state = initState, action: any) => {
             let berths: any = {
                 ...state.berths,
             }
-            console.log(action.delBerths);
-            console.log(berths[action.pnrNumber])
+            let newTickets: any = state.tickets.map((ticket: any) => {
+                if (ticket.pnr_number === action.pnrNumber) {
+                    ticket.refund_amount = action.new_refund_amount;
+                }
+                return ticket;
+            });
+
+            // newTickets[action.pnrNumber]['refund_amount'] = ;
             // we can assume that the berths[action.pnrNumber] is defined
             berths[action.pnrNumber] = berths[action.pnrNumber].map((f: any) => {
                 let resp = action.delBerths.find((e: { seat_number: number, coach_number: string }) => {
@@ -62,7 +68,7 @@ let ticketsReducer = (state = initState, action: any) => {
                 return f;
             })
             console.log(berths[action.pnrNumber])
-            return { ...state, isCancellingTicket: newLoadingList, berths }
+            return { ...state, isCancellingTicket: newLoadingList, berths, tickets: newTickets }
         }
         default: {
             return state;

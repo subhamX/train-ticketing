@@ -74,12 +74,21 @@ begin
     type=type || '%';
 
 	if method=0 then
-        execute format('select count(*)
-        from %I
-        where pnr_number is NULL
-        and coach_number LIKE %L', train_table_name, type) 
-        into number_of_seats;
-
+		if type='A%' then
+			execute format('SELECT available_ac_tickets
+				FROM train_instance
+				WHERE train_number=%L
+				AND journey_date=%L', 
+				train_number, journey_date)
+			INTO number_of_seats;
+		else
+			execute format('SELECT available_sleeper_tickets
+				FROM train_instance
+				WHERE train_number=%L
+				AND journey_date=%L', 
+				train_number, journey_date)
+			INTO number_of_seats;
+		end if;
 
         if number_of_seats < array_length(passengers, 1) then
             raise exception 'Only % tickets left', number_of_seats;

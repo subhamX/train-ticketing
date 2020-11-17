@@ -61,7 +61,12 @@ export const cancelTicketsAction = (payload: CancelTicketSchema) => async (dispa
             throw Error(resp.data.message);
         }
         message.success('Ticket Cancellation Success', 2);
-        dispatch({ type: CANCEL_TICKET_SUCCESS, pnrNumber: payload.pnr_number, delBerths: payload.seats })
+        dispatch({
+            type: CANCEL_TICKET_SUCCESS,
+            pnrNumber: payload.pnr_number,
+            delBerths: payload.seats,
+            new_refund_amount: resp.data.new_refund_amount
+        })
         // successful;
     } catch (err) {
         console.log(err);

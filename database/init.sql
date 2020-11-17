@@ -71,6 +71,7 @@ CREATE TABLE "tickets" (
     "username" varchar(30)   NOT NULL,
     "transaction_number" varchar(300)   NOT NULL,
     "time_of_booking" timestamptz   NOT NULL DEFAULT NOW(),
+    "refund_amount" decimal NOT NULL DEFAULT 0.0,
     CONSTRAINT "pk_tickets" PRIMARY KEY (
         "pnr_number"
      )
@@ -78,6 +79,7 @@ CREATE TABLE "tickets" (
 
 
 -- stores all cancelled berths
+-- even ("seat_number","coach_number") cannot be said to be unique always!
 CREATE TABLE "cancelled_berths" (
     "seat_number" int   NOT NULL,
     "coach_number" varchar(10)   NOT NULL,
@@ -87,7 +89,7 @@ CREATE TABLE "cancelled_berths" (
     "passenger_gender" char   NULL,
     "cancellation_timestamp" timestamptz not null DEFAULT now(),
     PRIMARY KEY (
-        "seat_number","coach_number"
+        "seat_number","coach_number", "pnr_number"
      )
 );
 
