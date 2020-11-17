@@ -79,7 +79,7 @@ function App() {
           <TicketSearch />
         </Route>
 
-        <PrivateRoute adminRoute={true} exact path="/tickets/book/">
+        <PrivateRoute exact path="/tickets/book/">
           <BookTickets />
         </PrivateRoute>
         <Route path="/tickets/listing/">
