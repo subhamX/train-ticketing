@@ -379,6 +379,7 @@ function Passengers(props: any) {
                 <Divider />
                 <Alert message="Cancelled Seats" type="warning" />
                 <Table
+                  scroll={{ x: true }}
                   loading={!loaded}
                   columns={columns}
                   dataSource={cancelledInstances}

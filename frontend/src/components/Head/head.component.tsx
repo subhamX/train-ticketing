@@ -87,7 +87,6 @@ function NavMenu({ defaultKey, md }: any) {
       mode={md ? "horizontal" : "vertical"}
       defaultSelectedKeys={[defaultKey]}
     >
-      <Menu.Item key="1"></Menu.Item>
       <Menu.Item key="2">
         <Link to="/trains/">Trains</Link>
       </Menu.Item>

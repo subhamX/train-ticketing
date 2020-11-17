@@ -61,6 +61,7 @@ export const cancelTicketsAction = (payload: CancelTicketSchema) => async (dispa
             throw Error(resp.data.message);
         }
         message.success('Ticket Cancellation Success', 2);
+        message.info(`New refund amount is ${resp.data.new_refund_amount}`, 2);
         dispatch({
             type: CANCEL_TICKET_SUCCESS,
             pnrNumber: payload.pnr_number,
