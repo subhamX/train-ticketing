@@ -275,7 +275,6 @@ function BookTickets() {
 export default BookTickets;
 
 export function TrainDetails(props: any) {
-  console.log(props);
   let {
     train_number: train_num,
     train_name,

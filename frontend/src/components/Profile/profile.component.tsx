@@ -298,7 +298,6 @@ function Passengers(props: any) {
 
   const handleSubmit = async () => {
     try {
-      console.log(cancelPayload);
       dispatch(
         cancelTicketsAction({ pnr_number: pnrNumber, seats: cancelPayload })
       );
@@ -315,9 +314,8 @@ function Passengers(props: any) {
             {activeInstances && activeInstances.length !== 0 ? (
               <>
                 <Form.Item label="Cancel Tickets View" valuePropName="checked">
-
                   <Switch
-                  style={{marginLeft: '5px'}}
+                    style={{ marginLeft: "5px" }}
                     onChange={(e) => {
                       setcancelTicket(e);
                     }}
@@ -371,7 +369,6 @@ function Passengers(props: any) {
                     >
                       Cancel Tickets
                     </Button>
-                    <Divider />
                   </>
                 ) : null}
               </>
@@ -379,6 +376,7 @@ function Passengers(props: any) {
 
             {cancelledInstances && cancelledInstances.length !== 0 ? (
               <>
+                <Divider />
                 <Alert message="Cancelled Seats" type="warning" />
                 <Table
                   loading={!loaded}

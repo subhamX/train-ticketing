@@ -39,8 +39,6 @@ let ticketsReducer = (state = initState, action: any) => {
             berths[action.pnrNumber] = action.data.berths;
             return { ...state, loadingTickets: newLoadingList, berths }
         } case CANCEL_TICKET_START: {
-            console.log(state)
-            console.log({ ...state, isCancellingTicket: [...state.isCancellingTicket, action.pnrNumber] })
             return { ...state, isCancellingTicket: [...state.isCancellingTicket, action.pnrNumber] };
         } case CANCEL_TICKET_SUCCESS: {
             let newLoadingList = state.isCancellingTicket.filter(e => {
@@ -67,7 +65,6 @@ let ticketsReducer = (state = initState, action: any) => {
                 }
                 return f;
             })
-            console.log(berths[action.pnrNumber])
             return { ...state, isCancellingTicket: newLoadingList, berths, tickets: newTickets }
         }
         default: {
