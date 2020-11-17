@@ -1,5 +1,15 @@
-import React, { CSSProperties, useEffect } from "react";
-import { Card, Row, Col, Tag, Spin, Collapse, Button, Alert } from "antd";
+import React, { useEffect } from "react";
+import {
+  Card,
+  Row,
+  Col,
+  Tag,
+  Spin,
+  Collapse,
+  Button,
+  Alert,
+  Descriptions,
+} from "antd";
 import { EnvironmentFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 
@@ -15,10 +25,9 @@ momentDurationFormatSetup(moment as any);
 const { Panel } = Collapse;
 
 function AllTrains() {
-  let {
-    trains,
-    fetching_trains: is_loading,
-  } = useSelector((state: any) => state.trainsReducer);
+  let { trains, fetching_trains: is_loading } = useSelector(
+    (state: any) => state.trainsReducer
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getTrains());
@@ -76,7 +85,6 @@ function AllTrains() {
 
 export default AllTrains;
 
-let keyStyle: CSSProperties = { fontWeight: "bold" };
 
 function TrainInstances(props: any) {
   let { trainNumber, history, ...extra } = props;
@@ -97,7 +105,7 @@ function TrainInstances(props: any) {
   return (
     <div>
       {!loaded ? (
-        <div style={{textAlign: 'center'}}>
+        <div style={{ textAlign: "center" }}>
           <Spin tip="Loading Train Instances"></Spin>
         </div>
       ) : (
@@ -107,114 +115,69 @@ function TrainInstances(props: any) {
           ) : null}
           {instances &&
             instances.map((data: any, index: any) => {
+              let {
+                journey_date,
+                available_ac_tickets,
+                booking_start_time,
+                booking_end_time,
+                status,
+                available_sleeper_tickets,
+              } = data;
               return (
                 <Card style={{ fontSize: "15px" }} key={index}>
-                  <Row>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          Journey Date:
-                        </Col>
-                        <Col span={16}>
-                          {new Date(data.journey_date).toLocaleDateString()}
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          Available AC Tickets:
-                        </Col>
-                        <Col span={16}>
-                          <Tag
-                            color={
-                              data.available_ac_tickets > 0 ? "green" : "red"
-                            }
-                          >
-                            {data.available_ac_tickets}
-                          </Tag>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          Available Sleeper Tickets:
-                        </Col>
-                        <Col span={16}>
-                          <Tag
-                            color={
-                              data.available_sleeper_tickets > 0
-                                ? "green"
-                                : "red"
-                            }
-                          >
-                            {data.available_sleeper_tickets}
-                          </Tag>
-                        </Col>
-                      </Row>
-                    </Col>
+                  <Descriptions layout="vertical" bordered={true}>
+                    <Descriptions.Item label="Available Sleeper Tickets Count:">
+                      {available_sleeper_tickets}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Available AC Tickets Count:">
+                      {available_ac_tickets}
+                    </Descriptions.Item>
 
+                    <Descriptions.Item label="Journey Date:">
+                      {new Date(journey_date).toLocaleDateString()}
+                    </Descriptions.Item>
+                    <Descriptions.Item label=" Booking Start Time:">
+                      {" "}
+                      {new Date(booking_start_time).toLocaleString()}
+                    </Descriptions.Item>
+                    <Descriptions.Item label=" Booking End Time:">
+                      {new Date(booking_end_time).toLocaleString()}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Status">
+                      <Tag
+                        color={
+                          status === "active"
+                            ? "#40960b"
+                            : status === "inactive"
+                            ? "grey"
+                            : "red"
+                        }
+                      >
+                        {status.toUpperCase()}
+                      </Tag>
+                    </Descriptions.Item>
+                  </Descriptions>
+                  <br />
+                  {data.status === "active" ? (
                     <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          Booking Start Time:{" "}
-                        </Col>
-                        <Col span={16}>
-                          {new Date(data.booking_start_time).toLocaleString()}
-                        </Col>
-                      </Row>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          history.push({
+                            pathname: "/tickets/book/",
+                            state: {
+                              ...extra,
+                              ...data,
+                            },
+                          });
+                        }}
+                      >
+                        Book Now
+                      </Button>
                     </Col>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          Booking End Time:{" "}
-                        </Col>
-                        <Col span={16}>
-                          {new Date(data.booking_end_time).toLocaleString()}
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col span={24}>
-                      <Row>
-                        <Col style={keyStyle} span={8}>
-                          Status:{" "}
-                        </Col>
-                        <Col span={16}>
-                          <Tag
-                            color={
-                              data.status === "active"
-                                ? "#40960b"
-                                : data.status === "inactive"
-                                ? "grey"
-                                : "red"
-                            }
-                          >
-                            {data.status.toUpperCase()}
-                          </Tag>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <hr />
-                    {data.status === "active" ? (
-                      <Col span={24}>
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            history.push({
-                              pathname: "/tickets/book/",
-                              state: {
-                                ...extra,
-                                ...data,
-                              },
-                            });
-                          }}
-                        >
-                          Book Now
-                        </Button>
-                      </Col>
-                    ) : null}
-                  </Row>
+                  ) : null}
+                  {/* </Row> */}
                 </Card>
               );
             })}
@@ -287,48 +250,23 @@ function TrainListItem({
           </div>
         </Col>
       </Row>
-      <Col span={24} style={{ textAlign: "center" }}>
-        <Alert
-          message={
-            <div>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Journey Duration:
-                  </Col>
-                  <Col span={16}>{`${moment
-                    .duration(journey_duration)
-                    .format("h [hours], m [minutes]")}
-              `}</Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Source Departure Time:
-                  </Col>
-                  <Col span={16}>{source_departure_time} Hrs</Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Sleeper Ticket Fare:
-                  </Col>
-                  <Col span={16}>{sleeper_ticket_fare}</Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    AC Ticket Fare
-                  </Col>{" "}
-                  <Col span={16}>{ac_ticket_fare}</Col>
-                </Row>
-              </Col>
-            </div>
-          }
-        />
+      <Col span={24} >
+        <div style={{}}>
+          <Descriptions layout="vertical" bordered={true}>
+            <Descriptions.Item label="Journey Duration:">{`${moment
+              .duration(journey_duration)
+              .format("h [hours], m [minutes]")}`}</Descriptions.Item>
+            <Descriptions.Item label="Sleeper Ticket Fare:">
+              {sleeper_ticket_fare}
+            </Descriptions.Item>
+            <Descriptions.Item label="AC Ticket Fare">
+              {ac_ticket_fare}
+            </Descriptions.Item>
+            <Descriptions.Item label=" Source Departure Time:">
+              {source_departure_time}
+            </Descriptions.Item>
+          </Descriptions>
+        </div>
         <br />
       </Col>
       <Col

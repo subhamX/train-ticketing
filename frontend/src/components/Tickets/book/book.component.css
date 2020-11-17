@@ -6,7 +6,6 @@
 
 .passenger_instance_wrapper{
   /* margin: auto; */
-
   width: 100% !important;
 }
 .passenger_instance_wrapper  .ant-space-item{
@@ -25,4 +24,14 @@
   display: flex;
   flex-direction: column;
   margin: auto;
+}
+.train-list-item .ant-alert{
+  padding: 8px 5px;
+}
+.train-list-item .ant-row{
+  margin: 5px 0px;
+}
+
+.ant-descriptions-item-label{
+  font-weight: 600;
 }

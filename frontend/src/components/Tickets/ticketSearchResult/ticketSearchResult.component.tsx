@@ -1,13 +1,13 @@
-import React, { CSSProperties, useEffect, useState } from "react";
-import { Card, Button, Alert, Spin, Row, Tag, Col, message } from "antd";
+import React, { useEffect, useState } from "react";
+import {  Button, Alert, Spin,  Col, message } from "antd";
 import moment from "moment";
 import { useHistory, useLocation } from "react-router-dom";
 
 import Head from "../../Head/head.component";
 import "./ticketSearchResult.component.css";
-import { EnvironmentFilled } from "@ant-design/icons";
 import { queryTrainsInstances } from "../../../services/api";
 import momentDurationFormatSetup from "moment-duration-format";
+import { TrainDetails } from "../book/book.component";
 
 momentDurationFormatSetup(moment as any);
 
@@ -84,69 +84,34 @@ function AllTrains() {
 
 export default AllTrains;
 
-let keyStyle: CSSProperties = { fontWeight: "bold" };
 
 function TrainListItem(props: any) {
-  let {
-    train_number: train_num,
-    train_name,
-    source: src,
-    destination: dest,
-    journey_duration,
-    sleeper_ticket_fare,
-    ac_ticket_fare,
-    journey_date,
-    booking_end_time,
-    booking_start_time,
-    available_sleeper_tickets,
-    available_ac_tickets,
-  } = props;
-  const rowStyle = {
-    padding: "6px",
-    fontSize: "1.1em",
-  };
   const history = useHistory();
 
   return (
-    <Card bodyStyle={{ padding: "12px 12px 12px 12px" }} hoverable={true}>
-      <Row style={rowStyle}>
-        <Col span={20}>
-          <Tag color="#108ee9" style={{ fontSize: "1em" }}>
-            {train_num}
-          </Tag>
-          <span style={{ fontWeight: "bold" }}>- {train_name}</span>
+    <div>
+      <TrainDetails {...props}>
+        <Col span={24}>
+          <Button
+            type="primary"
+            onClick={() => {
+              message.loading('Redirecting to bookings portal', 0.5)
+              setTimeout(() => {
+                history.push({
+                  pathname: "/tickets/book/",
+                  state: {
+                    ...props,
+                  },
+                });
+              }, 500);
+            }}
+          >
+            Book Now
+          </Button>
         </Col>
-        <Col span={4}>
-          <div className="seats-col-block">
-            <Row>
-              <Tag color={available_sleeper_tickets > 0 ? "#40960b" : "red"}>
-                SL
-              </Tag>
-            </Row>
-            <Row>
-              <Tag color={available_ac_tickets > 0 ? "#40960b" : "red"}>AC</Tag>
-            </Row>
-          </div>
-        </Col>
-      </Row>
-      <Row style={rowStyle}>
-        <Col className="src-dest-row" span={8}>
-          <div>
-            <EnvironmentFilled />
-            <span style={{ paddingLeft: "5px" }}>{src}</span>
-          </div>
-        </Col>
-        <Col className="src-dest-row" style={{ textAlign: "center" }} span={8}>
-          ...
-        </Col>
-        <Col className="src-dest-row" span={8} style={{ textAlign: "left" }}>
-          <div>
-            <EnvironmentFilled />
-            <span style={{ paddingLeft: "5px" }}>{dest}</span>
-          </div>
-        </Col>
-      </Row>
-      <Col span={24} style={{ textAlign: "left" }}>
+      </TrainDetails>
+
+      {/* <Col span={24} style={{ textAlign: "left" }}>
         <Alert
           message={
             <div>
@@ -237,26 +202,12 @@ function TrainListItem(props: any) {
                   </Row>
                 </Col>
                 <hr />
-                <Col span={24}>
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      history.push({
-                        pathname: "/tickets/book/",
-                        state: {
-                          ...props,
-                        },
-                      });
-                    }}
-                  >
-                    Book Now
-                  </Button>
-                </Col>
+                
               </Row>
             </div>
           }
         />
-      </Col>
-    </Card>
+      </Col> */}
+    </div>
   );
 }

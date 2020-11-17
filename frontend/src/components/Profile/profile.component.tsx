@@ -1,21 +1,15 @@
-import React, { Key, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "../Head/head.component";
-import { CancelTicketSchema } from "../../services/api";
 import {
   Card,
   Avatar,
   Table,
-  Tag,
   Typography,
   Alert,
-  Space,
   List,
   Button,
   Spin,
-  Row,
-  Col,
   Collapse,
-  Radio,
   Divider,
   Switch,
   Form,
@@ -109,7 +103,10 @@ function UserProfile() {
           <Alert
             type="warning"
             message={
-              <div>No tickets found! Click <Link to='/tickets/search/'>here</Link> to book a new ticket</div>
+              <div>
+                No tickets found! Click <Link to="/tickets/search/">here</Link>{" "}
+                to book a new ticket
+              </div>
             }
           />
         )}
@@ -117,7 +114,6 @@ function UserProfile() {
         {!ticketsLoading ? (
           <div>
             <List
-              bordered
               itemLayout="vertical"
               size="large"
               dataSource={tickets}
@@ -200,7 +196,7 @@ function UserProfile() {
                             }}
                           >
                             <span>Time of Booking: </span>
-                            {item.time_of_booking}
+                            {new Date(item.time_of_booking).toLocaleString()}
                           </div>
                         </List.Item>
                       }
@@ -238,6 +234,16 @@ const columns = [
     title: "Gender",
     dataIndex: "passenger_gender",
     render: (text: any) => `${text.toUpperCase()}`,
+  },
+  {
+    title: "Seat No.",
+    dataIndex: "seat_number",
+    render: (text: any) => `${text}`,
+  },
+  {
+    title: "Coach No.",
+    dataIndex: "coach_number",
+    render: (text: any) => `${text}`,
   },
 ];
 //
@@ -305,15 +311,18 @@ function Passengers(props: any) {
             {activeInstances && activeInstances.length !== 0 ? (
               <>
                 <Form.Item label="Cancel Tickets View" valuePropName="checked">
+
                   <Switch
+                  style={{marginLeft: '5px'}}
                     onChange={(e) => {
                       setcancelTicket(e);
                     }}
                   />
                 </Form.Item>
                 <Divider />
-                <Alert message="Active Tickets" type="warning" />
+                <Alert message="Confirmed Seats" type="warning" />
                 <Table
+                  scroll={{ x: true }}
                   loading={!loaded}
                   rowSelection={
                     cancelTicket
@@ -349,7 +358,7 @@ function Passengers(props: any) {
                       onClick={async () => {
                         modal.confirm({
                           title:
-                            "Are you sure you want to deleted the selected tickets? This action is irreversible!",
+                            "Are you sure you want to delete the selected tickets? This action is irreversible!",
                           onOk() {
                             handleSubmit();
                           },
@@ -366,7 +375,7 @@ function Passengers(props: any) {
 
             {cancelledInstances && cancelledInstances.length !== 0 ? (
               <>
-                <Alert message="Cancelled Tickets" type="warning" />
+                <Alert message="Cancelled Seats" type="warning" />
                 <Table
                   loading={!loaded}
                   columns={columns}

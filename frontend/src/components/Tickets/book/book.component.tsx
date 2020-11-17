@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Button,
@@ -13,6 +13,7 @@ import {
   InputNumber,
   Select,
   Radio,
+  Descriptions,
 } from "antd";
 import moment from "moment";
 import { useHistory, useLocation } from "react-router-dom";
@@ -124,13 +125,13 @@ function BookTickets() {
     <div className="trains">
       <Head />
       <div className="train-list-wrapper">
-        <h1>Submit Passenger Details</h1>
+        <h1>Add Passenger Details</h1>
         <>
           <div className="train-list-item">
             <TrainDetails {...data} />
           </div>
 
-          <div>
+          <div className="form-wrapper">
             <Form
               layout="vertical"
               form={form}
@@ -188,7 +189,7 @@ function BookTickets() {
                             {() => (
                               <Form.Item
                                 {...field}
-                                label="Passenger Name"
+                                label="Name"
                                 name={[field.name, "passenger_name"]}
                                 fieldKey={[field.fieldKey, "passenger_name"]}
                                 rules={[
@@ -204,7 +205,7 @@ function BookTickets() {
                           </Form.Item>
                           <Form.Item
                             {...field}
-                            label="Passenger Age"
+                            label="Age"
                             name={[field.name, "passenger_age"]}
                             fieldKey={[field.fieldKey, "passenger_age"]}
                             rules={[
@@ -220,9 +221,14 @@ function BookTickets() {
                             name={[field.name, "passenger_gender"]}
                             fieldKey={[field.fieldKey, "passenger_gender"]}
                             label="Gender"
-                            rules={[{ required: true }]}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Enter a valid value",
+                              },
+                            ]}
                           >
-                            <Select placeholder="Select a option" allowClear>
+                            <Select placeholder="Select" allowClear>
                               <Option value="male">male</Option>
                               <Option value="female">female</Option>
                               <Option value="other">other</Option>
@@ -268,22 +274,24 @@ function BookTickets() {
 
 export default BookTickets;
 
-let keyStyle: CSSProperties = { fontWeight: "bold" };
-
-function TrainDetails({
-  train_number: train_num,
-  train_name,
-  source: src,
-  destination: dest,
-  journey_duration,
-  sleeper_ticket_fare,
-  ac_ticket_fare,
-  journey_date,
-  booking_end_time,
-  booking_start_time,
-  available_sleeper_tickets,
-  available_ac_tickets,
-}: any) {
+export function TrainDetails(props: any) {
+  console.log(props);
+  let {
+    train_number: train_num,
+    train_name,
+    source: src,
+    destination: dest,
+    journey_duration,
+    source_departure_time,
+    sleeper_ticket_fare,
+    ac_ticket_fare,
+    journey_date,
+    booking_end_time,
+    booking_start_time,
+    available_sleeper_tickets,
+    available_ac_tickets,
+    children,
+  } = props;
   const rowStyle = {
     padding: "6px",
     fontSize: "1.1em",
@@ -328,100 +336,49 @@ function TrainDetails({
           </div>
         </Col>
       </Row>
-      <Col span={24} style={{ textAlign: "left" }}>
-        <Alert
-          message={
-            <div>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Journey Duration:
-                  </Col>
-                  <Col span={16}>{`${moment
-                    .duration(journey_duration)
-                    .format("h [hours], m [minutes]")}
-              `}</Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Available Sleeper Tickets Count:
-                  </Col>
-                  <Col span={16}>{available_sleeper_tickets}</Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Available AC Tickets Count:
-                  </Col>
-                  <Col span={16}>{available_ac_tickets}</Col>
-                </Row>
-              </Col>
+      <Col
+        span={24}
+        style={{ textAlign: "left" }}
+        className="train-desc-wrapper"
+      >
+        <Descriptions layout="vertical" bordered={true}>
+          <Descriptions.Item label="Journey Duration:">{`${moment
+            .duration(journey_duration)
+            .format("h [hours], m [minutes]")}`}</Descriptions.Item>
+          <Descriptions.Item label="Available Sleeper Tickets Count:">
+            {available_sleeper_tickets}
+          </Descriptions.Item>
+          <Descriptions.Item label="Available AC Tickets Count:">
+            {available_ac_tickets}
+          </Descriptions.Item>
+          <Descriptions.Item label=" Source Departure Time:">
+            {source_departure_time}
+          </Descriptions.Item>
+          <Descriptions.Item label="Journey Date:">
+            {new Date(journey_date).toLocaleDateString()}
+          </Descriptions.Item>
+          <Descriptions.Item label=" Booking Start Time:">
+            {" "}
+            {new Date(booking_start_time).toLocaleString()}
+          </Descriptions.Item>
+          <Descriptions.Item label=" Booking End Time:">
+            {new Date(booking_end_time).toLocaleString()}
+          </Descriptions.Item>
 
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    Sleeper Ticket Fare:
-                  </Col>
-                  <Col span={16}>{sleeper_ticket_fare}</Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Row>
-                  <Col style={keyStyle} span={8}>
-                    AC Ticket Fare
-                  </Col>{" "}
-                  <Col span={16}>{ac_ticket_fare}</Col>
-                </Row>
-              </Col>
-              <Row>
-                <Col span={24}>
-                  <Row>
-                    <Col style={keyStyle} span={8}>
-                      Journey Date:
-                    </Col>
-                    <Col span={16}>
-                      {new Date(journey_date).toLocaleDateString()}
-                    </Col>
-                  </Row>
-                </Col>
+          <Descriptions.Item label="Sleeper Ticket Fare:">
+            {sleeper_ticket_fare}
+          </Descriptions.Item>
+          <Descriptions.Item label="AC Ticket Fare">
+            {ac_ticket_fare}
+          </Descriptions.Item>
 
-                <Col span={24}>
-                  <Row>
-                    <Col style={keyStyle} span={8}>
-                      Booking Start Time:{" "}
-                    </Col>
-                    <Col span={16}>
-                      {new Date(booking_start_time).toLocaleString()}
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={24}>
-                  <Row>
-                    <Col style={keyStyle} span={8}>
-                      Booking End Time:{" "}
-                    </Col>
-                    <Col span={16}>
-                      {new Date(booking_end_time).toLocaleString()}
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={24}>
-                  <Row>
-                    <Col style={keyStyle} span={8}>
-                      Status:{" "}
-                    </Col>
-                    <Col span={16}>
-                      <Tag color={"#40960b"}>Active</Tag>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </div>
-          }
-        />
+          <Descriptions.Item label="Status">
+            <Tag color={"#40960b"}>Active</Tag>
+          </Descriptions.Item>
+        </Descriptions>
+      </Col>
+      <Col>
+        <div style={{ textAlign: "right", marginTop: "15px" }}>{children}</div>
       </Col>
     </Card>
   );

@@ -52,11 +52,11 @@ function Login() {
           ) : null}
           <Form.Item
             name="username"
-            label="username"
+            label="Username"
             rules={[
               {
                 required: true,
-                message: "Please input your username!",
+                message: "Please input your Username!",
               },
             ]}
           >
