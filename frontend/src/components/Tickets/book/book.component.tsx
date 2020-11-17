@@ -51,7 +51,6 @@ function BookTickets() {
   const data: dataSchema = location.state as any;
 
   useEffect(() => {
-    console.log(data);
     if (!data.train_number || !data.journey_date) {
       message.error(`Invalid Access`, 4);
       setTimeout(() => {
@@ -76,7 +75,6 @@ function BookTickets() {
       if (payload.passengers === undefined) {
         throw Error("Atleast add one passenger to continue");
       }
-      console.log(payload);
 
       message.warning(`Processing your details`, 2);
       await delay(1);
@@ -84,7 +82,7 @@ function BookTickets() {
       message.loading(`Generating transaction Number`, 2);
       let transaction_number = Math.random()
         .toString(36)
-        .substring(5)
+        .substr(2, 8)
         .repeat(2);
       await delay(1);
 
@@ -92,7 +90,6 @@ function BookTickets() {
       await delay(1);
 
       message.loading(`Booking Tickets`, 2);
-      await delay(1);
 
       let numberOfPassengers = payload.passengers.length;
       let ticket_fare =
@@ -161,7 +158,6 @@ function BookTickets() {
                 rules={[
                   {
                     validator: async (_, passengers) => {
-                      console.log(passengers);
                       if (!passengers || passengers.length < 1) {
                         return Promise.reject(
                           new Error(
@@ -174,7 +170,7 @@ function BookTickets() {
                 ]}
               >
                 {(fields, { add, remove }, { errors }) => (
-                  <div className='main-wrapper'>
+                  <div className="main-wrapper">
                     {fields.map((field) => {
                       return (
                         <Space
@@ -183,7 +179,7 @@ function BookTickets() {
                           className="passenger_instance_wrapper"
                         >
                           <Form.Item
-                          className='passenger_instance'
+                            className="passenger_instance"
                             shouldUpdate={(prevValues, curValues) =>
                               prevValues.area !== curValues.area ||
                               prevValues.sights !== curValues.sights
@@ -226,10 +222,7 @@ function BookTickets() {
                             label="Gender"
                             rules={[{ required: true }]}
                           >
-                            <Select
-                              placeholder="Select a option"
-                              allowClear
-                            >
+                            <Select placeholder="Select a option" allowClear>
                               <Option value="male">male</Option>
                               <Option value="female">female</Option>
                               <Option value="other">other</Option>
