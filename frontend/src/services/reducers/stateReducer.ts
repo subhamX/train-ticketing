@@ -20,7 +20,7 @@ let statusReducer = (state = initState, action: any) => {
         } case LOADING_END: {
             return { ...initState, isLoading: false, message: "" };
         } case ERROR_OCCURED:{
-            return { ...initState, error: true, message: action.message };
+            return { ...initState, error: true, isLoading: false, message: action.message };
         } default: {
             return state;
         }

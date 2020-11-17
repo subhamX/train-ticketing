@@ -20,7 +20,9 @@ export const checkUserAuthStatus = () => async (dispatch: Dispatch) => {
   } catch (err) {
     console.log(err);
     message.error('Something went wrong! All functionalities might not work', 2);
-    dispatch({ type: ERROR_OCCURED, message: 'Sorry! Something went wrong.' });
+    setTimeout(() => {
+      dispatch({ type: ERROR_OCCURED, message: 'Sorry! Something went wrong.' });
+    }, 800);
   }
 }
 

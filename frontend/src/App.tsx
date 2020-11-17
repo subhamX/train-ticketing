@@ -31,12 +31,14 @@ function App() {
     dispatch(checkUserAuthStatus());
   }, [dispatch]);
 
-  if (error) {
-    return <Error />;
-  }
+  
   if (isLoading) {
     return <Loader />;
   }
+  if (error) {
+    return <Error />;
+  }
+  
   return (
     <BrowserRouter>
       <Switch>

@@ -28,14 +28,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postbuild": "react-snap"
-  },
-  "reactSnap": {
-    "puppeteerArgs": [
-      "--no-sandbox",
-      "--disable-setuid-sandbox"
-    ]
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -58,7 +51,6 @@
   "devDependencies": {
     "@types/moment-duration-format": "^2.2.2",
     "@types/react-redux": "^7.1.11",
-    "@types/react-router-dom": "^5.1.6",
-    "react-snap": "^1.23.0"
+    "@types/react-router-dom": "^5.1.6"
   }
 }
