@@ -19,15 +19,21 @@ import AddTrain from "./components/Admin/AddTrain/addTrain.component";
 import AdminHome from "./components/Admin/Home";
 import AddNewBookingInstance from "./components/Admin/AddNewBookingInstance/addNewBookingInstance.component";
 import AddNewCoach from "./components/Admin/AddCoach/addCoach.component";
+import Error from "./components/Error/error.component";
 
 function App() {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state: any) => state.stateReducer.isLoading);
+  const { isLoading, error } = useSelector(
+    (state: any) => state.stateReducer
+  );
 
   useEffect(() => {
     dispatch(checkUserAuthStatus());
   }, [dispatch]);
 
+  if (error) {
+    return <Error />;
+  }
   if (isLoading) {
     return <Loader />;
   }

@@ -1,7 +1,7 @@
 import { message } from "antd";
 import { Dispatch } from "redux";
 import { getUserData, sendLogOutSignal } from "../api";
-import { LOADING_END, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../constants";
+import { ERROR_OCCURED, LOADING_END, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../constants";
 
 /**
  * Action to update the user instance in the store 
@@ -19,7 +19,8 @@ export const checkUserAuthStatus = () => async (dispatch: Dispatch) => {
     dispatch({ type: LOADING_END });
   } catch (err) {
     console.log(err);
-    message.error('Something went wrong!', 2);
+    message.error('Something went wrong! All functionalities might not work', 2);
+    dispatch({ type: ERROR_OCCURED, message: 'Sorry! Something went wrong.' });
   }
 }
 

@@ -25,6 +25,8 @@ function Loader() {
         }}
       >
         <Spin indicator={antIcon} />
+
+        <h2 style={{marginTop: '18px'}}>Loading...</h2>
       </div>
     </>
   );
