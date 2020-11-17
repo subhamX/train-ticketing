@@ -20,6 +20,7 @@ import {
   Switch,
   Form,
   message,
+  Descriptions,
 } from "antd";
 import "./profile.component.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +32,10 @@ import {
 import moment from "moment";
 import momentDurationFormatSetup from "moment-duration-format";
 import Modal from "antd/lib/modal/Modal";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 momentDurationFormatSetup(moment as any);
 const { Panel } = Collapse;
@@ -58,7 +63,9 @@ function UserProfile() {
         <Card className="profile-card">
           <Card.Meta
             title={
-              <div style={{fontSize: '1.75rem'}}>{`Hello ${user.first_name}`}</div>
+              <div
+                style={{ fontSize: "1.75rem" }}
+              >{`Hello ${user.first_name}`}</div>
             }
             avatar={
               <Avatar
@@ -67,76 +74,57 @@ function UserProfile() {
               />
             }
           ></Card.Meta>
-          <br />
           <Alert message="Please find your details below" />
-          <Table
-            pagination={false}
-            dataSource={[
-              {
-                key: "1",
-                attribute: "First Name",
-                value: user.first_name,
-              },
-              {
-                key: "2",
-                attribute: "Last Name",
-                value: user.last_name,
-              },
-              {
-                key: "3",
-                attribute: "UserName",
-                value: user.username,
-              },
-              {
-                key: "4",
-                attribute: "Email",
-                value: user.email,
-              },
-              {
-                key: "5",
-                attribute: "Is Admin",
-                value: user.is_admin ? "True" : "False",
-              },
-            ]}
-            showHeader={false}
-            columns={[
-              {
-                title: null,
-                dataIndex: "attribute",
-                key: "attribute",
-                render: (text) => <div>{text}</div>,
-              },
-              {
-                title: null,
+          <Divider />
 
-                dataIndex: "value",
-                key: "value",
-                render: (text) => <Tag color="green">{text}</Tag>,
-              },
-            ]}
-          />
+          <Descriptions bordered size="middle">
+            <Descriptions.Item label="First Name" span={24}>
+              {user.first_name}
+            </Descriptions.Item>
+            <Descriptions.Item label="Last Name" span={24}>
+              {user.last_name}
+            </Descriptions.Item>
+            <Descriptions.Item label="UserName" span={24}>
+              {user.username}
+            </Descriptions.Item>
+            <Descriptions.Item label="Email" span={24}>
+              {user.email}
+            </Descriptions.Item>
+            <Descriptions.Item label="Is Admin" span={24}>
+              {user.is_admin ? "True" : "False"}
+            </Descriptions.Item>
+          </Descriptions>
         </Card>
       </div>
       <br />
 
       <div style={{ width: "80vw", maxWidth: "800px", margin: "auto" }}>
         <Typography.Title>My Tickets</Typography.Title>
-        <Alert
-          type="success"
-          message="Tap on any card to see the passenger details"
-        />
+        {tickets && tickets.length !== 0 ? (
+          <Alert
+            type="success"
+            message="Tap on any card to see the passenger details"
+          />
+        ) : (
+          <Alert
+            type="warning"
+            message={
+              <div>No tickets found! Click <Link to='/tickets/search/'>here</Link> to book a new ticket</div>
+            }
+          />
+        )}
         <Divider dashed={true} />
         {!ticketsLoading ? (
           <div>
             <List
+              bordered
               itemLayout="vertical"
               size="large"
               dataSource={tickets}
               renderItem={(item: any) => {
                 return (
-                  <Collapse  className='ticket-wrapper'>
+                  <Collapse className="ticket-wrapper">
                     <Panel
-                      
                       showArrow={false}
                       key={item.pnr_number}
                       header={
@@ -150,7 +138,7 @@ function UserProfile() {
                                 <span style={{ color: "rosybrown" }}>
                                   PNR Number:
                                 </span>{" "}
-                                {item.pnr_number}
+                                {item.pnr_number.toUpperCase()}
                               </div>
                             }
                             description={
@@ -190,9 +178,7 @@ function UserProfile() {
                               <span>Journey Duration: </span>
                               {`${moment
                                 .duration(item.journey_duration)
-                                .format(
-                                  "h [hours], m [minutes]"
-                                )}`}
+                                .format("h [hours], m [minutes]")}`}
                             </div>
 
                             <div className="ticket_item">
@@ -228,7 +214,9 @@ function UserProfile() {
             ,
           </div>
         ) : (
-          <Spin />
+          <div style={{ textAlign: "center" }}>
+            <Spin indicator={antIcon} />
+          </div>
         )}
       </div>
     </div>
@@ -249,7 +237,7 @@ const columns = [
   {
     title: "Gender",
     dataIndex: "passenger_gender",
-    render: (text:any) => `${text.toUpperCase()}`
+    render: (text: any) => `${text.toUpperCase()}`,
   },
 ];
 //
@@ -309,82 +297,93 @@ function Passengers(props: any) {
     }
   };
   return (
-    <div>
-      {activeInstances && activeInstances.length !== 0 ? (
+    <>
+      {loaded ? (
         <>
-          <Form.Item label="Cancel Tickets View" valuePropName="checked">
-            <Switch
-              onChange={(e) => {
-                setcancelTicket(e);
-              }}
-            />
-          </Form.Item>
-          <Divider />
-          <Alert message="Active Tickets" type="warning" />
-          <Table
-            loading={!loaded}
-            rowSelection={
-              cancelTicket
-                ? {
-                    type: "checkbox",
-                    onChange: (e) => {
-                      let selected: any = [];
-                      e.forEach((elem: any) => {
-                        let [coach_number, seat_number] = elem.split("_");
-                        seat_number = parseInt(seat_number);
-                        selected.push({
-                          coach_number,
-                          seat_number,
-                        });
-                      });
-                      setcancelPayload(selected);
-                    },
+          {" "}
+          <div>
+            {activeInstances && activeInstances.length !== 0 ? (
+              <>
+                <Form.Item label="Cancel Tickets View" valuePropName="checked">
+                  <Switch
+                    onChange={(e) => {
+                      setcancelTicket(e);
+                    }}
+                  />
+                </Form.Item>
+                <Divider />
+                <Alert message="Active Tickets" type="warning" />
+                <Table
+                  loading={!loaded}
+                  rowSelection={
+                    cancelTicket
+                      ? {
+                          type: "checkbox",
+                          onChange: (e) => {
+                            let selected: any = [];
+                            e.forEach((elem: any) => {
+                              let [coach_number, seat_number] = elem.split("_");
+                              seat_number = parseInt(seat_number);
+                              selected.push({
+                                coach_number,
+                                seat_number,
+                              });
+                            });
+                            setcancelPayload(selected);
+                          },
+                        }
+                      : undefined
                   }
-                : undefined
-            }
-            columns={columns}
-            dataSource={activeInstances}
-            pagination={false}
-          />
-          {cancelTicket ? (
-            <>
-              <Divider />
+                  columns={columns}
+                  dataSource={activeInstances}
+                  pagination={false}
+                />
+                {cancelTicket ? (
+                  <>
+                    <Divider />
 
-              <Button
-                type="primary"
-                disabled={cancelPayload.length === 0}
-                loading={isCancelling}
-                onClick={async () => {
-                  modal.confirm({
-                    title:
-                      "Are you sure you want to deleted the selected tickets? This action is irreversible!",
-                    onOk() {
-                      handleSubmit();
-                    },
-                  });
-                }}
-              >
-                Cancel Tickets
-              </Button>
-              <Divider />
-            </>
-          ) : null}
+                    <Button
+                      type="primary"
+                      disabled={cancelPayload.length === 0}
+                      loading={isCancelling}
+                      onClick={async () => {
+                        modal.confirm({
+                          title:
+                            "Are you sure you want to deleted the selected tickets? This action is irreversible!",
+                          onOk() {
+                            handleSubmit();
+                          },
+                        });
+                      }}
+                    >
+                      Cancel Tickets
+                    </Button>
+                    <Divider />
+                  </>
+                ) : null}
+              </>
+            ) : null}
+
+            {cancelledInstances && cancelledInstances.length !== 0 ? (
+              <>
+                <Alert message="Cancelled Tickets" type="warning" />
+                <Table
+                  loading={!loaded}
+                  columns={columns}
+                  dataSource={cancelledInstances}
+                  pagination={false}
+                />
+              </>
+            ) : null}
+
+            {contextHolder}
+          </div>
         </>
-      ) : null}
-
-      {cancelledInstances && cancelledInstances.length !== 0 ? (
-        <>
-          <Alert message="Cancelled Tickets" type="warning" />
-          <Table
-            loading={!loaded}
-            columns={columns}
-            dataSource={cancelledInstances}
-            pagination={false}
-          />
-        </>
-      ) : null}
-
-      {contextHolder}
-    </div>
+      ) : (
+        <div style={{ textAlign: "center" }}>
+          <Spin indicator={antIcon} />
+        </div>
+      )}
+    </>
   );
 }

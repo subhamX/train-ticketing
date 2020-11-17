@@ -140,3 +140,4 @@ ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFE
 CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
 ALTER DATABASE postgres SET datestyle TO "ISO, DMY";
+

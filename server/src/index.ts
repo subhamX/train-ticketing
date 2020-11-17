@@ -30,6 +30,7 @@ const app = Express()
 //     })
 // }
 
+
 const pgSession = require('connect-pg-simple')(session);
 app.use(
     cors({
@@ -47,7 +48,6 @@ app.use(
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET as string,
         resave: false,
-        cookie: { maxAge: 5 * 24 * 60 * 60 * 1000 }
     })
 );
 
