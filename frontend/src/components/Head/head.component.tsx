@@ -6,6 +6,8 @@ import { logoutUser } from "../../services/actions/auth";
 import "./head.component.css";
 import { Layout } from "antd";
 import { UnorderedListOutlined } from "@ant-design/icons";
+import logo from '../../assets/logo/logo.png';
+
 
 const { Header } = Layout;
 
@@ -50,7 +52,8 @@ function Head() {
     <div className="header-wrapper">
       <Header>
         <Link to="/">
-          <h3 className="logo">Railways</h3>
+          {/* <h3 className="logo">Railways</h3> */}
+          <img src={logo} className="logo" alt='Railways' />
         </Link>
         {md ? (
           <NavMenu defaultKey={defaultKey} md={md} />

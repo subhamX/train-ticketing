@@ -6,4 +6,11 @@ header {
 }
 .logo {
   color: white;
+  height: 50px;
+}
+
+@media all and (max-width: 325px){
+  .ant-layout-header{
+    padding: 0 15px;
+  }
 }
