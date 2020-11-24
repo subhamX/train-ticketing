@@ -26,7 +26,6 @@ CREATE TABLE "coaches" (
 -- *Dynamically created by trigger before coaches row are inserted
 -- CREATE TABLE "coach_composition_{coach_id}" (
 --     "berth_number" int   NOT NULL,
---     -- if ever we want 3
 --     "berth_type" char(3)   NOT NULL,
 --     CONSTRAINT "pk_coach_composition_{coach_id}" PRIMARY KEY (
 --         "berth_number"
@@ -42,6 +41,7 @@ CREATE TABLE "train_instance" (
     "number_of_sleeper_coaches" int  DEFAULT 0 NOT NULL,
     "ac_coach_id" int   NULL,
     "sleeper_coach_id" int   NULL,
+    -- storing train_table_name to make things more verbose
     "train_table_name" varchar(100) NOT NULL,
     "available_ac_tickets" int  NOT NULL,
     "available_sleeper_tickets" int  NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE "train_instance" (
      )
 );
 
--- *Dynamically created before row is added to train_instance
+-- *Dynamically created before a row is added to train_instance
 -- CREATE TABLE "train_{TrainNumber_DDMMYY}" (
 --     "seat_number" int   NOT NULL,
 --     "coach_number" varchar(10)   NOT NULL,
@@ -62,6 +62,8 @@ CREATE TABLE "train_instance" (
 --         "seat_number","coach_number"
 --      )
 -- );
+-- ALTER TABLE "train_{TrainNumber_DDMMYY}" ADD CONSTRAINT "fk_train_{TrainNumber_DDMMYY}_pnr_number" FOREIGN KEY("pnr_number")
+-- REFERENCES "tickets" ("pnr_number");
 
 CREATE TABLE "tickets" (
     "pnr_number" varchar(10) DEFAULT generate_pnr_number(10, 'tickets', 'pnr_number'),
