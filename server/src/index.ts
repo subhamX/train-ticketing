@@ -8,30 +8,16 @@ import userRoutes from './routes/user';
 import adminRoutes from './routes/admin';
 import coachesRoute from './routes/coaches';
 import citiesRoutes from './routes/cities';
-
-
 import ticketRoutes from './routes/tickets';
 import passport from 'passport';
 import cors from 'cors';
 import { pool } from './db';
-const app = Express()
 
-/**
- * Dummy middleware to add delay in response
- */
-// if (process.env.NODE_ENV === 'development') {
-//     app.use(async (req, res, next) => {
-//         await new Promise((resolve, reject) => {
-//             setTimeout(() => {
-//                 resolve(1);
-//             }, 1000);
-//         })
-//         next();
-//     })
-// }
+const app = Express()
 
 app.set('trust proxy', 1);
 
+// Configuring connect pg for persistent sessions
 const pgSession = require('connect-pg-simple')(session);
 app.use(
     cors({
@@ -39,7 +25,7 @@ app.use(
         credentials: true,
     })
 );
-
+// configuring express session
 app.use(
     session({
         store: new pgSession({
@@ -53,10 +39,12 @@ app.use(
     })
 );
 
+// Configuring cookie and json parser middleware
 app.use(cookie_parser())
 app.use(bodyParser.json())
-require("./auth/passportConfig")(passport);
 
+// Configuring passport middleware for authentication
+require("./auth/passportConfig")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -71,14 +59,15 @@ app.use('/cities/', citiesRoutes);
 
 
 app.get('/', (req: Request, res: Response) => {
-
     res.send({
         'status': 200,
         'error': false
     })
 })
 
-
+/**
+ * Not Found Handler 
+ */
 app.get('*', function (req, res) {
     res.status(404).send({
         error: true,

@@ -5,7 +5,9 @@ import db from '../db/index';
 
 const app = Router();
 
-// Route for admins to add a new train
+/**
+ * Route for admins to add a new train
+ */
 app.post('/trains/add/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         let result = trainSchema.validate(req.body);
@@ -27,7 +29,6 @@ app.post('/trains/add/', verifyToken, verifyAdmin, async (req, res) => {
 })
 
 /**
- * 
  * Function to expand the given rowCount and columnCount
  * expand(3, 2) returns "($1, $2), ($3, $4), ($5, $6)" 
  */
@@ -46,6 +47,9 @@ function flatten(arr: any[][]) {
     return newArr
 }
 
+/**
+ * Route to allow user to add a new coach into the system
+ */
 app.post('/coaches/add/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         let { name, description, composition } = req.body;
@@ -86,6 +90,9 @@ interface TrainInstanceSchema {
     sleeper_coach_id: Number;
 }
 
+/**
+ * Route to allow the admin to add booking instance
+ */
 app.post('/addbookinginstance/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         let instance: TrainInstanceSchema = req.body;

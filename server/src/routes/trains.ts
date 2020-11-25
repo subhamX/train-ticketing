@@ -5,7 +5,9 @@ import db from '../db/index'
 
 const app = Router()
 
-// returns a comprehensive list of registered trains in the system
+/**
+ * Route to serve a comprehensive list of registered trains in the system
+ */
 app.get('/list/', async (req, res) => {
     try {
         let data = await db.query(`SELECT * FROM trains`)
@@ -40,6 +42,7 @@ app.get('/info/:train_number', async (req, res) => {
                 message: `Invalid train number ${train_number}`,
             })
         }
+        // adding the train instance
         let resp = await db.query(`select booking_end_time, booking_start_time, journey_date,
             available_ac_tickets, available_sleeper_tickets,
             CASE WHEN booking_end_time > $2 and booking_start_time < $2 then 'active' 

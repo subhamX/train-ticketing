@@ -106,7 +106,9 @@ async function getPaymentStatus(numberOfPassengers: number,
 }
 
 
-// route to book ticket
+/**
+ * Route to allow booking of the ticket by an authenticated user 
+ */
 app.post('/book/', verifyToken, async (req, res) => {
     let instance: TicketInstance = req.body;
     let username = (req.user as UserSchema).username;

@@ -3,7 +3,9 @@ import db from '../db/index'
 
 const app = Router()
 
-// returns the list of coaches in the system
+/**
+ * Route to return the list of coaches in the system
+ */
 app.get('/list/', async (req, res) => {
     try {
         let data = await db.query(`SELECT * FROM coaches`)
@@ -20,7 +22,9 @@ app.get('/list/', async (req, res) => {
     }
 })
 
-// returns the information of the coach
+/**
+ * Route to return the information of the coach
+ */
 app.get('/info/:coach_id', async (req, res) => {
     try {
         let coach_id = req.params.coach_id
