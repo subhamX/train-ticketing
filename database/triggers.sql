@@ -1,11 +1,10 @@
--- TRIGGER 1: create a new table and add seats to this table on addition of a new train into train_instance
+--* TRIGGER 1: create a new table and add seats to this table on addition of a new train into train_instance
 create or replace function handle_on_new_train_instance()
     returns trigger
     language plpgsql
     as
 $$
 declare
-    train_table_name_PREFIX varchar(50):='train';
     train_table_name varchar(100);
     number_of_ac_coaches integer;
     ac_coach_id integer;
@@ -29,7 +28,7 @@ begin
     number_of_ac_coaches=NEW.number_of_ac_coaches;
     number_of_sleeper_coaches=NEW.number_of_sleeper_coaches;
 
-    -- checking if coachid is valid
+    -- checking if ac_coachid is valid
     SELECT EXISTS (
         SELECT FROM coaches
         WHERE coach_id=ac_coach_id
@@ -40,6 +39,7 @@ begin
         raise exception 'Invalid AC Coach ID %', ac_coach_id;
     end if;
 
+    -- checking if sleeper_coachid is valid
     SELECT EXISTS (
         SELECT FROM coaches
         WHERE coach_id=sleeper_coach_id
@@ -50,25 +50,26 @@ begin
         raise exception 'Invalid Sleeper Coach ID %', ac_coach_id;
     end if;
 
-    -- adding available_ac_tickets
+    -- calculating the seat count of the coach and updating the total available ac tickets count
     execute format('select seats_count
         from coaches 
         where coach_id=%L', ac_coach_id)
     into seat_count;
     NEW.available_ac_tickets=NEW.number_of_ac_coaches * seat_count;
 
-    -- adding available_sleeper_tickets
+    -- calculating the seat count of the coach and updating the total available sleeper tickets count
     execute format('select seats_count
         from coaches 
         where coach_id=%L', sleeper_coach_id)
     into seat_count;
     NEW.available_sleeper_tickets=NEW.number_of_sleeper_coaches * seat_count;
 
-
-    train_table_name=train_table_name_PREFIX || '_' || NEW.train_number || '_' || to_char(NEW.journey_date,'ddmmyyyy');
-
+    -- getting the train_table_name and updating the train_table_name attribute
+	select get_train_table_name('train_'::text, NEW.train_number, NEW.journey_date)
+	into train_table_name;
     NEW.train_table_name = train_table_name;
-    -- create a new table named train_{train_number}_{DDMMYY}
+    
+    -- creating a new table named train_{train_number}_{DDMMYY}
     execute format(
         'create table %I(
             seat_number int,
@@ -82,13 +83,13 @@ begin
             )
         )', train_table_name
     );
-
+    -- adding foreign key constraints to pnr_number attribute
     execute format('ALTER TABLE %I 
         ADD FOREIGN KEY("pnr_number")
         REFERENCES "tickets" ("pnr_number")', train_table_name);
 
 
-
+    
     -- handling for AC coaches
     -- retrieving the ac_composition table name
     select composition_table
@@ -163,7 +164,7 @@ create trigger new_train_instance_trigger
     execute procedure handle_on_new_train_instance();
 
 
--- TRIGGER 2: checks if the composition table exists or not on addition of a new entry in coaches table
+--* TRIGGER 2: checks if the composition table exists or not on addition of a new entry in coaches table
 create or replace function on_coaches_insert()
 returns trigger
 language plpgsql
@@ -407,7 +408,7 @@ create trigger on_coach_delete
 
 
 
--- TRIGGER 5: if any row in train_instance is deleted then the following trigger
+-- TRIGGER 6: if any row in train_instance is deleted then the following trigger
 --  deletes the train_table corresponding to it
 create or replace function handle_on_train_instance_delete()
 	returns trigger

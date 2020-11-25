@@ -4,6 +4,12 @@ CREATE SCHEMA public;
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+/*
+utility function to generate a unique pnr number of length size.
+table name and attribute name is also passed to it. In rare cases it might happen that
+some conflicting PNR number is generated. It checks for that and in case there are any
+conflicts it generate a new one (for a maximum times of 5)
+*/
 CREATE OR REPLACE FUNCTION generate_pnr_number(size INT, table_name text, pk_attribute text, times INT DEFAULT 0) 
 RETURNS TEXT 
 LANGUAGE plpgsql AS 
@@ -42,7 +48,11 @@ END;
 $$;
 
 
-
+/*
+utility function takes the PREFIX, trainNumber and the
+journey date and returns the train_table_name the relation 
+where we are storing the all the seat details for this train instance
+*/
 create or replace function get_train_table_name(
 	IN train_table_name_PREFIX text,
 	IN train_number varchar(100),

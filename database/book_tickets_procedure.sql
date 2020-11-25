@@ -40,7 +40,8 @@ declare
     number_of_seats integer;
     index integer;
 begin
-	-- checking if pnr_number is passed
+	-- checking if pnr_number is NULL
+	-- It should be NULL as the procedure will allocate the PNR number and not the caller.
 	if pnr_number IS NOT NULL then
 		raise exception 'Invalid argument PNR Number';
 	end if;
@@ -57,6 +58,9 @@ begin
  		raise exception 'Invalid attempt to book ticket in % train on %', train_number, journey_date;
  	end if;
 	
+	-- Please note that we are not validating the ticket_fare.
+	-- It should be done at the server. As the database is only accessible from
+	-- the server. It's very safe to assume that the ticket_fare is correct, and verified.
 	-- Generate a new ticket
 	execute format('INSERT INTO tickets(ticket_fare, train_number, username, transaction_number, journey_date)
 	values(%L, %L, %L, %L, %L) returning *', ticket_fare, train_number, username, transaction_number, journey_date)
@@ -67,13 +71,16 @@ begin
 	select get_train_table_name('train_'::text, train_number, journey_date)
 	into train_table_name;
 
+	-- check if the coach type is correct
     if type NOT IN ('A', 'S') then
         raise exception 'type % is invalid; Only A for AC and S for Sleeper are valid ones', type;
     end if;
 
     type=type || '%';
 
+	-- method=0 refers to book a ticket and allot any seats without any preference  
 	if method=0 then
+		-- fetching the number of seats available
 		if type='A%' then
 			execute format('SELECT available_ac_tickets
 				FROM train_instance
@@ -90,11 +97,13 @@ begin
 			INTO number_of_seats;
 		end if;
 
+		-- if number of seats needed are atleast available 
         if number_of_seats < array_length(passengers, 1) then
             raise exception 'Only % tickets left', number_of_seats;
         end if;
 
         index=1;
+		-- booking all tickets
         for i in execute format('select seat_number, coach_number 
                     from %I
                     where pnr_number is %L
@@ -118,6 +127,7 @@ begin
 			passengers[index]=instance;
             index=index+1;
         end loop;
+		
 		-- update tickets count in train_instance
 		if type='A%' then
 			execute format('UPDATE train_instance

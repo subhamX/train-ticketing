@@ -1,6 +1,8 @@
+/*
+function to cancel berths. It takes pnrNumber, username, seats array and coach_number array and returns the new refund amount.
+Example: select cancel_berths(user_name=>'jaihanuman', pnr_num=>'54ovvsy7kr', seats=>array[4, 3], coach_numbers=>array['A2', 'A2']);
+*/
 
--- function to cancel berths
--- Example: select cancel_berths(user_name=>'jaihanuman', pnr_num=>'54ovvsy7kr', seats=>array[4, 3], coach_numbers=>array['A2', 'A2']);
 create or replace function cancel_berths(
 	INOUT pnr_num text,
     INOUT user_name text,
@@ -24,27 +26,32 @@ declare
 	departure_time text;
 	source_departure_timestamp timestamp;	
 begin
+	-- fetching ticket details
 	SELECT train_number, journey_date
 	FROM tickets
 	where pnr_number=pnr_num
     and username=user_name
 	into ticket_details;
 	
+	-- building the train table name. It is the relation which contains all the seats information
 	select get_train_table_name('train_'::text, ticket_details.train_number, ticket_details.journey_date)
 	into train_table_name;
 	
 	raise info 'Train Table Name: %', train_table_name;
-	-- check if the pnr is valid
+	-- Raising exception if the pnr is invalid or the pnr doesn't belong to the user
 	if ticket_details IS NULL then
 		raise exception 'Invalid Details';
 	end if;
 	
+	-- checking if the lenghth of the seats array is equal to coach_numbers array length
 	if array_upper(seats, 1) <> array_upper(coach_numbers, 1) then
 		raise exception 'Seats and coaches array length is not same';
 	end if;
 
 
-
+	-- iterating through all these seats[i] and coach_number[i] and deleting the ticket. It takes
+	-- All seats with their complete information are added into cancelled_berths relation.
+	--  It is done to ensure that we are maintaining a record of the cancelled berths for any future claims by agent.
 	for i in array_lower(seats, 1)..array_upper(seats, 1) loop
 		execute format('UPDATE %I as x
 			SET pnr_number=NULL,
