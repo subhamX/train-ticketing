@@ -57,6 +57,12 @@ begin
  	if train_details is NULL then
  		raise exception 'Invalid attempt to book ticket in % train on %', train_number, journey_date;
  	end if;
+
+	 if train_details.booking_start_time > now() then
+	 	raise exception 'Sorry booking isn''t started yet.';
+	 elsif train_details.booking_end_time < now() then
+	 	raise exception 'Sorry you missed the booking deadline. 😢';
+	 end if;
 	
 	-- Please note that we are not validating the ticket_fare.
 	-- It should be done at the server. As the database is only accessible from
