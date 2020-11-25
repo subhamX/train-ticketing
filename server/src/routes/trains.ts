@@ -1,4 +1,6 @@
 import { Router } from 'express'
+import Joi from 'joi'
+import { UserSchema } from 'src/schema/model'
 import db from '../db/index'
 
 const app = Router()
@@ -65,9 +67,9 @@ app.get('/current/active', async (req, res) => {
     try {
         let { source, destination, date } = req.query;
         let data;
-        let queryResult=false;
+        let queryResult = false;
         if (source && destination && date) {
-            queryResult=true;
+            queryResult = true;
 
             data = await db.query(
                 `SELECT train_instance.train_number, journey_date, booking_start_time, booking_end_time,
@@ -93,10 +95,10 @@ app.get('/current/active', async (req, res) => {
 
         if (data.rowCount === 0) {
             let message;
-            if(queryResult){
-                message=`No trains available for booking with query Source:${source}, Destination: ${destination}, Date: ${date}`;
-            }else{
-                message=`No trains available for booking`
+            if (queryResult) {
+                message = `No trains available for booking with query Source:${source}, Destination: ${destination}, Date: ${date}`;
+            } else {
+                message = `No trains available for booking`
             }
             return res.send({
                 error: true,
@@ -113,6 +115,35 @@ app.get('/current/active', async (req, res) => {
     }
 })
 
+/**
+ * Route to serve the reservation chart of a train on a day
+ * Expects trainNumber and date to be in query params 
+ * Date should be of format DDMMYYYY
+ * 
+ * If the user is admin then all details including passenger age, gender etc are sent. 
+ * Else only non-sensitive details are returned
+ */
+app.get('/chart/:trainNumber/:dateOfJourney', async (req, res) => {
+    try {
+        let { trainNumber, dateOfJourney } = req.params;
+        Joi.assert(trainNumber, Joi.number());
+        Joi.assert(dateOfJourney, Joi.date());
+        console.log(trainNumber);
+        let trainTableName = `train_${trainNumber}_${dateOfJourney}`
+        let attributes;
+        if ((req.user as UserSchema).is_admin) {
+            attributes='*';
+        }else{
+            attributes='seat_number, coach_number,passenger_name, pnr_number';
+        }
+        let resp = await db.query(`SELECT ${attributes} FROM ${trainTableName} WHERE pnr_number IS NOT NULL;`);
 
-
+        if (resp.rowCount === 0) {
+            return res.send({ error: false, message: 'No tickets booked so far' })
+        }
+        return res.send({ error: false, data: resp.rows })
+    } catch (err) {
+        return res.send({ error: true, message: err.message })
+    }
+})
 export default app
