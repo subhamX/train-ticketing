@@ -149,7 +149,8 @@ app.post('/book/', verifyToken, async (req, res) => {
     try {
         let method = instance.booking_type;
         let passengerPayload = generatePassengerString(instance.passengers);
-        let response = await db.query(`call book_tickets(passengers=>array[${passengerPayload}],
+        
+        let response = await db.serializedTransaction(`call book_tickets(passengers=>array[${passengerPayload}],
             train_number=>$1,
             journey_date=>$2,
             username=>$3,
