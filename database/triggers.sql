@@ -288,6 +288,7 @@ declare
     train_table_name_PREFIX varchar(100):='train_';
 	ac_coach_PREFIX char(1):='A';
 	sleeper_coach_PREFIX char(1):='S';
+    seat_count integer;
 begin
     if NEW.ac_coach_id <> OLD.ac_coach_id then
         raise exception 'AC Coach ID cannot be changed!';
@@ -331,6 +332,15 @@ begin
                 starti=starti+1;
             end loop;
         end loop;
+
+        -- updating the ac seat count
+        execute format('select seats_count
+            from coaches 
+            where coach_id=%L', NEW.ac_coach_id)
+        into seat_count;
+        NEW.available_ac_tickets=NEW.available_ac_tickets + (NEW.number_of_ac_coaches - OLD.number_of_ac_coaches) * seat_count;
+
+        
     elsif  NEW.number_of_ac_coaches < OLD.number_of_ac_coaches then
         raise exception 'Number of AC coaches cannot be reduced!';
     end if;
@@ -366,6 +376,16 @@ begin
                 starti=starti+1;
             end loop;
         end loop;
+
+
+        -- updating the sleeper seat count
+        execute format('select seats_count
+            from coaches 
+            where coach_id=%L', NEW.sleeper_coach_id)
+        into seat_count;
+        NEW.available_sleeper_tickets=NEW.available_sleeper_tickets + (NEW.number_of_sleeper_coaches - OLD.number_of_sleeper_coaches) * seat_count;
+
+
     elsif  NEW.number_of_sleeper_coaches < OLD.number_of_sleeper_coaches then
         raise exception 'Number of Sleeper coaches cannot be reduced!';
     end if;
