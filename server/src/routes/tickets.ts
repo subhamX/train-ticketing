@@ -151,7 +151,7 @@ app.post('/book/', verifyToken, async (req, res) => {
     try {
         let method = instance.booking_type;
         let passengerPayload = generatePassengerString(instance.passengers);
-        
+
         let response = await db.serializedTransaction(`call book_tickets(passengers=>array[${passengerPayload}],
             train_number=>$1,
             journey_date=>$2,
@@ -235,7 +235,7 @@ app.get('/info/:id', verifyToken, async (req, res) => {
         let pnrNumber = req.params.id;
         Joi.assert(pnrNumber, Joi.string().alphanum().required())
         pnrNumber = pnrNumber.toLowerCase();
-        let resp = await db.query(`select pnr_number, tickets.train_number, tickets.journey_date, train_table_name, trains.source_departure_time, trains.journey_duration
+        let resp = await db.query(`select ac_coach_id,sleeper_coach_id, pnr_number, tickets.train_number, tickets.journey_date, train_table_name, trains.source_departure_time, trains.journey_duration
             from trains, train_instance, tickets
             where trains.train_number=train_instance.train_number
             and trains.train_number=tickets.train_number
@@ -256,15 +256,43 @@ app.get('/info/:id', verifyToken, async (req, res) => {
         }
         let trainTableName = resp.rows[0].train_table_name;
 
-        let berthsResp = await db.query(`select *, 1 as is_cancelled
-            from cancelled_berths
-            where pnr_number=$1
-            union
-            select *, NULL as cancellation_timestamp, 0 as is_cancelled
+        // ticket will either have ac coaches or sleeper one
+        // check if the one is AC or Sleeper
+        let temp = await db.query(`select coach_number
             from ${trainTableName}
-            where pnr_number=$1;`,
+            where pnr_number=$1
+            limit 1;`,
             [pnrNumber]
         )
+        let berthsResp;
+        if (temp.rowCount === 0) {
+            // all tickets are cancelled
+            berthsResp = await db.query(`select *, 1 as is_cancelled, 'X' as seat_type
+            from cancelled_berths
+            where pnr_number=$1`,
+                [pnrNumber]
+            );
+        } else {
+            let coachID;
+            if (temp.rows[0]['coach_number'][0] === 'A') {
+                coachID = resp.rows[0]['ac_coach_id'];
+            } else {
+                coachID = resp.rows[0]['sleeper_coach_id'];
+            }
+            let coachCompositionTableName=`coach_composition_${coachID}`
+
+            berthsResp = await db.query(`select *, 1 as is_cancelled, 'X' as seat_type
+                from cancelled_berths
+                where pnr_number=$1
+                union
+                select A.*, NULL as cancellation_timestamp, 0 as is_cancelled, berth_type as seat_type
+                from ${trainTableName} as A, ${coachCompositionTableName} as B
+                where pnr_number=$1
+                and A.seat_number= B.berth_number;`,
+                [pnrNumber]
+            )
+        }
+
         res.send({
             error: false,
             meta,

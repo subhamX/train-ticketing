@@ -131,10 +131,9 @@ app.get('/chart/:trainNumber/:dateOfJourney', async (req, res) => {
         let { trainNumber, dateOfJourney } = req.params;
         Joi.assert(trainNumber, Joi.number());
         Joi.assert(dateOfJourney, Joi.date());
-        console.log(trainNumber);
         let trainTableName = `train_${trainNumber}_${dateOfJourney}`
         let attributes;
-        if ((req.user as UserSchema).is_admin) {
+        if (req.user!==undefined && (req.user as UserSchema).is_admin) {
             attributes='*';
         }else{
             attributes='seat_number, coach_number,passenger_name, pnr_number';

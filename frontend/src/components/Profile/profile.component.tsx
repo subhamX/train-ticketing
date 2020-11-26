@@ -245,6 +245,11 @@ const columns = [
     render: (text: any) => `${text}`,
   },
   {
+    title: "Seat Type",
+    dataIndex: "seat_type",
+    render: (text: any) => `${text}`,
+  },  
+  {
     title: "Coach No.",
     dataIndex: "coach_number",
     render: (text: any) => `${text}`,
