@@ -2,7 +2,7 @@
 
 The following website is a Railway Ticket Booking Portal. This project embraces the Client-Server architecture, where the server and database are hosted separately and the client communicates via REST APIs. 
 
-The latest version of the **Railway Reservation System** is deployed at **[cs301.tech](https://cs301.tech/)**.
+The latest version of the **Railway Reservation System** is deployed at **[traintkt.appspot.com](https://traintkt.appspot.com/)**.
 
 
 ## Project Design Overview
@@ -96,33 +96,98 @@ Use cases have been divided based on the end user i.e. Admin and Booking Agents.
 
 ## API Endpoints Overview
 
-POST user/profile → Gives back information of the user; Only the authenticated user can see his data
+`POST user/profile` → Gives back information of the user; Only the authenticated user can see his data
 
-GET trains/list → shows a list of all available trains; Public View
+`GET trains/list` → shows a list of all available trains; Public View
 
-GET trains/info/:id → shows train information, and all bookings available; Public View [TO UPDATE]
+`GET trains/info/:id` → shows train information, and all bookings available; Public View [TO UPDATE]
 
-GET /trains/current/active → Shows all trains which are active booking phase; Public View
+`GET /trains/current/active` → Shows all trains which are active booking phase; Public View
 
-GET /cities/all → Returns a list of all cities which are either source or destination; Public View.
+`GET /cities/all` → Returns a list of all cities which are either source or destination; Public View.
 
-POST tickets/book → Allows user to book a ticket; Must be authenticated
+`POST tickets/book` → Allows user to book a ticket; Must be authenticated
 
-POST tickets/cancel → Route to cancel berths from tickets; Must be authenticated; Can cancel only his/her ticket
+`POST tickets/cancel` → Route to cancel berths from tickets; Must be authenticated; Can cancel only his/her ticket
 
-GET tickets/info/:pnr → Gives back passenger list, and other info; Must be authenticated
+`GET tickets/info/:pnr` → Gives back passenger list, and other info; Must be authenticated
 
-GET tickets/all/ → Gives back tickets for a user; Must be authenticated
+`GET tickets/all/` → Gives back tickets for a user; Must be authenticated
 
-GET /coaches/list → See all coaches; Public View;
+`GET /coaches/list` → See all coaches; Public View;
 
-GET /coaches/:id → Coach Information; Public View
+`GET /coaches/:id` → Coach Information; Public View
 
-POST admin/addbookinginstance → Add a train for booking; Must be an admin
+`POST admin/addbookinginstance` → Add a train for booking; Must be an admin
 
-POST admin/trains/add → Add a new train; Must be an admin
+`POST admin/trains/add` → Add a new train; Must be an admin
 
-POST admin/coaches/add → Add a coach; Must be an admin;
+`POST admin/coaches/add` → Add a coach; Must be an admin;
 
-GET chart/:train_number/:date → See the reservation chart; Public View
+`GET chart/:train_number/:date` → See the reservation chart; Public View
 
+## Google Cloud Deployment
+
+1. Build the frontend. Ensure that `.env` is updated with the correct server URL.  
+```bash
+npm run build
+```
+2. Run the following command to build the server code.
+```bash
+npm run watch
+```
+3. Now copy the `build/` directory from `frontend/` to `server/`.
+```bash
+cp frontend/build/ server/build/ 
+```
+4. Add `app.yaml` inside `server/` with the following content. Replace `[DATA]` with correct value.
+```yaml
+runtime: nodejs12
+instance_class: [DATA]
+
+env_variables:
+  PG_USERNAME : [DATA]
+  PG_HOST : [DATA]
+  PG_DATABASE : [DATA]
+  PG_PASSWORD : [DATA]
+  PG_PORT : [DATA]
+
+  JWT_SECRET : [DATA]
+  JWT_REFRESH_SECRET : [DATA]
+  SESSION_SECRET : [DATA]
+  CLIENT_URL : [DATA]
+  NODE_ENV: production
+
+automatic_scaling:
+  max_instances: [DATA]
+
+
+handlers:
+  - url: /api/.*
+    secure: always
+    script: auto
+  # Serve all static files with url ending with a file extension
+  - url: /(.*\..+)$
+    secure: always
+    static_files: build/\1
+    upload: build/(.*\..+)$
+  # Catch all handler to index.html
+  - url: /.*
+    secure: always
+    static_files: build/index.html
+    upload: build/index.html
+
+```
+5. Now add `.gcloudignore` file inside `server/` and add the following content.
+```
+node_modules/
+src/
+.env
+.prettierrc.json
+.prettierignore
+tsconfig.json
+```
+6. Deploy the project to app engine.
+```bash
+gcloud app deploy
+```

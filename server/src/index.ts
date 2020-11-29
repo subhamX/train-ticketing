@@ -49,16 +49,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use('/tickets/', ticketRoutes)
-app.use('/trains/', trainRoutes);
-app.use('/auth/', authRoutes);
-app.use('/coaches/', coachesRoute);
-app.use('/users/', userRoutes);
-app.use('/admin/', adminRoutes);
-app.use('/cities/', citiesRoutes);
+app.use('/api/tickets/', ticketRoutes)
+app.use('/api/trains/', trainRoutes);
+app.use('/api/auth/', authRoutes);
+app.use('/api/coaches/', coachesRoute);
+app.use('/api/users/', userRoutes);
+app.use('/api/admin/', adminRoutes);
+app.use('/api/cities/', citiesRoutes);
 
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/api/', (req: Request, res: Response) => {
     res.send({
         'status': 200,
         'error': false
@@ -68,7 +68,7 @@ app.get('/', (req: Request, res: Response) => {
 /**
  * Not Found Handler 
  */
-app.get('*', function (req, res) {
+app.get('/api/*', function (req, res) {
     res.status(404).send({
         error: true,
         message: `Cannot ${req.method} ${req.path}`

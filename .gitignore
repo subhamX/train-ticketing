@@ -5,3 +5,5 @@ dist/
 server/server.rest
 app.yaml
 .gcloudignore
+.local/
+build/

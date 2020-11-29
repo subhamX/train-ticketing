@@ -1,6 +1,6 @@
 {
-  "short_name": "CS301 Railway",
-  "name": "IITRPR CS301 Railway",
+  "short_name": "Railway",
+  "name": "Book Train Ticket in the Best Railway",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

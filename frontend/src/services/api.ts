@@ -1,14 +1,14 @@
 
 import axios from 'axios';
 
-const url = process.env.REACT_APP_SERVER_URL;
+const url = `${process.env.REACT_APP_SERVER_URL}/api`;
 
 export const getUserData = () => axios.get(`${url}/users/profile/`, { withCredentials: true });
 
 export const sendLogOutSignal = () => axios.post(`${url}/auth/logout/`, {}, { withCredentials: true });
 
 export const registerUser = (payload: any) => axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/auth/register`,
+    `${url}/auth/register`,
     payload,
     {
         withCredentials: true,
@@ -18,7 +18,7 @@ export const registerUser = (payload: any) => axios.post(
 export const getTrainsList = () => axios.get(`${url}/trains/list/`, { withCredentials: true });
 
 export const loginUser = (payload: any) => axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/auth/login`,
+    `${url}/auth/login`,
     payload,
     {
         withCredentials: true
