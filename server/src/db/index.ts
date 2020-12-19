@@ -3,11 +3,10 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 const clientInfo = {
-    user: process.env.PG_USERNAME,
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    password: process.env.PG_PASSWORD,
-    port: (process.env.PG_PORT as unknown) as number,
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 }
 export const pool = new Pool(clientInfo)
 

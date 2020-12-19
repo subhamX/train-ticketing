@@ -2,6 +2,8 @@
 import axios from 'axios';
 
 let url = `${process.env.NODE_ENV==='development' ? process.env.REACT_APP_DEV_SERVER_URL : process.env.REACT_APP_SERVER_URL}`;
+if(url==='undefined')
+    url='';
 if(url.substr(-1)!=='/')
     url+='/';
 url+='api';

@@ -12,6 +12,7 @@ import ticketRoutes from './routes/tickets';
 import passport from 'passport';
 import cors from 'cors';
 import { pool } from './db';
+import path from 'path';
 
 const app = Express()
 
@@ -21,7 +22,7 @@ app.set('trust proxy', 1);
 const pgSession = require('connect-pg-simple')(session);
 app.use(
     cors({
-        origin: process.env.CLIENT_URL as string,
+        origin: process.env.CLIENT_URL as string ?? '/',
         credentials: true,
     })
 );
@@ -33,15 +34,15 @@ app.use(
             tableName: 'session'
         }),
         saveUninitialized: false,
-        secret: process.env.SESSION_SECRET as string,
+        secret: (process.env.SESSION_SECRET as string),
         resave: false,
         cookie: process.env.NODE_ENV === 'production' ? { secure: true, sameSite: 'strict' } : {},
     })
 );
-
+app.use(Express.static(path.join(__dirname, 'build')));
 // Configuring cookie and json parser middleware
 app.use(cookie_parser())
-app.use(bodyParser.json())
+app.use(Express.json())
 
 // Configuring passport middleware for authentication
 require("./auth/passportConfig")(passport);
@@ -74,6 +75,10 @@ app.get('/api/*', function (req, res) {
         message: `Cannot ${req.method} ${req.path}`
     });
 });
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/build/index.html'));
+})
 
 app.listen(process.env.PORT ?? 8080, () => {
     console.log(`Server running at PORT:${process.env.PORT ?? 8080}`)

@@ -1,0 +1,8 @@
+setup:
+  addons:
+  - plan: heroku-postgresql
+    as: DATABASE
+build:
+  docker:
+    web: Dockerfile
+    # Make sure that the Config Vars listed in Dockerfile are set
