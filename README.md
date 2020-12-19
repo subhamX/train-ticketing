@@ -2,7 +2,7 @@
 
 The following website is a Railway Ticket Booking Portal. This project embraces the Client-Server architecture, where the server and database are hosted separately and the client communicates via REST APIs. 
 
-The latest version of the **Railway Reservation System** is deployed at **[traintkt.appspot.com](https://traintkt.appspot.com/)**.
+The latest version of the **Railway Reservation System** is deployed at **[traintkt.herokuapp.com](https://traintkt.herokuapp.com/)**.
 
 
 ## Project Design Overview
@@ -23,19 +23,18 @@ The latest version of the **Railway Reservation System** is deployed at **[train
 
 ## Key Features
 
-1. Users can look for all trains, with their details and all active, inactive and expired booking instances of that train.
+1. The project uses dynamic SQL techniques, procedures, triggers, for consistency, and faster query execution. 
 
-2. Users can enter source, destination and date of journey and find if there are any trains available for following parameters.
+2. Client can browse though the trains catalogue, their details and all active booking instances of it.
 
-3. Users can book tickets for multiple passengers at once.
+3. The project implements an easy to use trains search view with autosuggestions for train stations. Client can enter source, destination and date of journey and find if there are any trains available for following parameters.
 
-4. Users can cancel multiple confirmed seats.
+4. Both booking tickets and cancel tickets operation can be performed on multiple passengers at once. 
 
 5. Admin can add trains, coaches, and booking instances from the 
 user interface and need not write any SQL query.
 
-6. Our portal supports multiple coaches and the Admin can define which coach schema to choose at the time of adding a booking instance.
-
+6. Our portal supports multiple coaches, and the Admin can define which coach schema to choose at the time of adding a booking instance.
 
 ## Technology Stack
 1. TypeScript
@@ -47,26 +46,22 @@ user interface and need not write any SQL query.
 Use cases have been divided based on the end user i.e. Admin and Booking Agents.
     
 ### Functionalites for Admin
-1. Seperate Authentication for Admin.
+1. Separate Authentication for Admin, and a dedicated admin dashboard.
    
-2. Add `Trains` and the relevant information into the database for Reservation.
+2. Admin can add new `Trains`, `Coaches` with different seating schemas into the database for the dashboard.
 
-3. Add `Coaches` with different seating schemas
+3. Add and update `Reservation status` for trains.
 
-4. Add and update `Reservation status` for trains.
+4. Admin can perform the above operations without writing any database query by using our **simple and convenient User Interface**.
 
-    Admin can perform the above operations without writing any database query by using our **simple and convenient User Interface**.
-
-### Functionalites for Booking Agent
-1. Seperate Authentication for Booking Agents.
-
-2. View all trains, with their details and all active, inactive, and expired booking instances of that train on the `Trains` page.
+### Demo
+1. Trains list View
     
     <!-- Trains page view -->
     <img src="./docs/trains.png" />
 
 
-3. Search for Available trains based on Starting location, Ending location, and Journey date. To ease searching for specific cities(location), we provide **incremental search** feature for the user.
+2. Trains Search Route can help users quickly find the available trains based on starting location, ending location, and the journey date. To ease searching for a specific station, **we autocomplete the source and destination fields based on the keywords** entered by users with the possible stations.
    
     <!-- Search trains page view -->
     <img src="./docs/incremental_search_trains.png" />
@@ -74,18 +69,18 @@ Use cases have been divided based on the end user i.e. Admin and Booking Agents.
     <!-- Search results -->
     <img src="./docs/search_results.png">
 
-4. Booking Agent can book tickets for multiple passangers on available trains.
+3. Tickets Booking View
    
     <!-- Ticket booking input view -->
     <img src="./docs/book_ticket.png">
 
-5. View all the tickets booked, i.e., canceled, confirmed, so far under the `My Tickets` section on the `Profile` page.
+4. User Profile Dashboard showing all past tickets
     
     <!-- Ticket booking input view -->
     <img src="./docs/my_tickets.png">
 
 
-6. Cancel confirmed tickets. This operation releases the seat for other passengers for booking while the train's booking status is "Active". The refund of the cancelation of tickets will be resolved every day during maintainance hours, this reegular update reduces the storage overhead, by releasing the details of refunds.
+5. Users can cancel the confirmed tickets before the train departure. This operation releases the seat for other passengers for booking while the train's booking status is "Active". The refund of the cancelation of tickets will be resolved every day during maintainance hours, this reegular update reduces the storage overhead, by releasing the details of refunds.
    
     <!-- cancel ticket view on profile -->
     <img src="./docs/cancel_booked_ticket.png">
@@ -100,7 +95,7 @@ Use cases have been divided based on the end user i.e. Admin and Booking Agents.
 
 `GET trains/list` → shows a list of all available trains; Public View
 
-`GET trains/info/:id` → shows train information, and all bookings available; Public View [TO UPDATE]
+`GET trains/info/:id` → shows train information, and all bookings available; Public View
 
 `GET /trains/current/active` → Shows all trains which are active booking phase; Public View
 
@@ -130,15 +125,17 @@ Use cases have been divided based on the end user i.e. Admin and Booking Agents.
 
 1. Build the frontend. Ensure that `.env` is updated with the correct server URL.  
 ```bash
+cd frontend/
 npm run build
 ```
 2. Run the following command to build the server code.
 ```bash
-npm run watch
+cd server/
+npm run build
 ```
-3. Now copy the `build/` directory from `frontend/` to `server/`.
+3. Now copy the `build/` directory from `frontend/` to `server/dist/`.
 ```bash
-cp frontend/build/ server/build/ 
+cp frontend/build/ server/dist/build/ 
 ```
 4. Add `app.yaml` inside `server/` with the following content. Replace `[DATA]` with correct value.
 ```yaml
@@ -146,14 +143,7 @@ runtime: nodejs12
 instance_class: [DATA]
 
 env_variables:
-  PG_USERNAME : [DATA]
-  PG_HOST : [DATA]
-  PG_DATABASE : [DATA]
-  PG_PASSWORD : [DATA]
-  PG_PORT : [DATA]
-
-  JWT_SECRET : [DATA]
-  JWT_REFRESH_SECRET : [DATA]
+  DATABASE_URL : [DATA]
   SESSION_SECRET : [DATA]
   CLIENT_URL : [DATA]
   NODE_ENV: production
@@ -169,13 +159,13 @@ handlers:
   # Serve all static files with url ending with a file extension
   - url: /(.*\..+)$
     secure: always
-    static_files: build/\1
-    upload: build/(.*\..+)$
+    static_files: dist/build/\1
+    upload: dist/build/(.*\..+)$
   # Catch all handler to index.html
   - url: /.*
     secure: always
-    static_files: build/index.html
-    upload: build/index.html
+    static_files: dist/build/index.html
+    upload: dist/build/index.html
 
 ```
 5. Now add `.gcloudignore` file inside `server/` and add the following content.
