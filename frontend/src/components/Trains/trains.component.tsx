@@ -10,7 +10,7 @@ import {
   Alert,
   Descriptions,
 } from "antd";
-import { EnvironmentFilled, HeatMapOutlined } from "@ant-design/icons";
+import { EnvironmentFilled, BranchesOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 
 import Head from "../Head/head.component";
@@ -56,10 +56,7 @@ function AllTrains() {
               />
             ) : null}
             <div className="train-list-item">
-              <Collapse
-              bordered={false}
-              className='collapse_card_wrapper'
-              >
+              <Collapse bordered={false} className="collapse_card_wrapper">
                 {trains &&
                   trains.map((train: any) => {
                     return (
@@ -115,74 +112,91 @@ function TrainInstances(props: any) {
           {instances && instances.length === 0 ? (
             <Alert message="No Booking Instances Found" type="warning" />
           ) : null}
-          {instances &&
-            instances.map((data: any, index: any) => {
-              let {
-                journey_date,
-                available_ac_tickets,
-                booking_start_time,
-                booking_end_time,
-                status,
-                available_sleeper_tickets,
-              } = data;
-              return (
-                <Card style={{ fontSize: "15px", width: '90%', margin: 'auto' }} key={index} className='train_instance_card'>
-                  <Descriptions title={<div><HeatMapOutlined />{`   ${index+1}`}</div>} layout="vertical" bordered={true}>
-                    <Descriptions.Item label="Available Sleeper Tickets Count:">
-                      {available_sleeper_tickets}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Available AC Tickets Count:">
-                      {available_ac_tickets}
-                    </Descriptions.Item>
-
-                    <Descriptions.Item label="Journey Date:">
-                      {new Date(journey_date).toLocaleDateString()}
-                    </Descriptions.Item>
-                    <Descriptions.Item label=" Booking Start Time:">
-                      {" "}
-                      {new Date(booking_start_time).toLocaleString()}
-                    </Descriptions.Item>
-                    <Descriptions.Item label=" Booking End Time:">
-                      {new Date(booking_end_time).toLocaleString()}
-                    </Descriptions.Item>
-
-                    <Descriptions.Item label="Status">
-                      <Tag
-                        color={
-                          status === "active"
-                            ? "#40960b"
-                            : status === "inactive"
-                            ? "grey"
-                            : "red"
+          <div className="trains-wrapper">
+            {instances &&
+              instances.map((data: any, index: any) => {
+                let {
+                  journey_date,
+                  available_ac_tickets,
+                  booking_start_time,
+                  booking_end_time,
+                  status,
+                  available_sleeper_tickets,
+                } = data;
+                return (
+                  <>
+                    <Card
+                      key={index}
+                      className="train_instance_card"
+                    >
+                      <Descriptions
+                        layout="vertical"
+                        bordered={true}
+                        size="small"
+                        column={1}
+                        title={
+                          <>
+                            {" "}
+                            <BranchesOutlined />
+                            {index + 1}{" "}
+                          </>
                         }
                       >
-                        {status.toUpperCase()}
-                      </Tag>
-                    </Descriptions.Item>
-                  </Descriptions>
-                  <br />
-                  {data.status === "active" ? (
-                    <Col span={24}>
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          history.push({
-                            pathname: "/tickets/book/",
-                            state: {
-                              ...extra,
-                              ...data,
-                            },
-                          });
-                        }}
-                      >
-                        Book Now
-                      </Button>
-                    </Col>
-                  ) : null}
-                  {/* </Row> */}
-                </Card>
-              );
-            })}
+                        <Descriptions.Item label="Available Sleeper Tickets Count:">
+                          {available_sleeper_tickets}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Available AC Tickets Count:">
+                          {available_ac_tickets}
+                        </Descriptions.Item>
+
+                        <Descriptions.Item label="Journey Date:">
+                          {new Date(journey_date).toLocaleDateString()}
+                        </Descriptions.Item>
+                        <Descriptions.Item label=" Booking Start Time:">
+                          {" "}
+                          {new Date(booking_start_time).toLocaleString()}
+                        </Descriptions.Item>
+                        <Descriptions.Item label=" Booking End Time:">
+                          {new Date(booking_end_time).toLocaleString()}
+                        </Descriptions.Item>
+
+                        <Descriptions.Item label="Status">
+                          {data.status === "active" ? (
+                            <>
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  history.push({
+                                    pathname: "/tickets/book/",
+                                    state: {
+                                      ...extra,
+                                      ...data,
+                                    },
+                                  });
+                                }}
+                              >
+                                Book Now
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              style={{
+                                color:
+                                  data.status === "inactive" ? "grey" : "red",
+                              }}
+                              disabled={true}
+                            >
+                              {status.toUpperCase()}
+                            </Button>
+                          )}
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </Card>
+                    {/* <Divider  className='train_instance_divider'/> */}
+                  </>
+                );
+              })}
+          </div>
         </>
       )}
     </div>
@@ -221,7 +235,7 @@ function TrainListItem({
 
   return (
     <Card
-    hoverable
+      hoverable
       className="train_instance_card_wrapper"
       bodyStyle={{ padding: "12px 12px 12px 12px" }}
     >
@@ -276,7 +290,13 @@ function TrainListItem({
       </Col>
       <Col
         span={24}
-        style={{ color: "grey", fontSize: '12px',  fontStyle: "italic", textAlign: "center", marginTop: '8px' }}
+        style={{
+          color: "grey",
+          fontSize: "12px",
+          fontStyle: "italic",
+          textAlign: "center",
+          marginTop: "8px",
+        }}
       >
         Tap on this card to look for available booking instances
       </Col>

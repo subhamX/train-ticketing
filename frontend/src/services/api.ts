@@ -1,7 +1,10 @@
 
 import axios from 'axios';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/api`;
+let url = `${process.env.NODE_ENV==='development' ? process.env.REACT_APP_DEV_SERVER_URL : process.env.REACT_APP_SERVER_URL}`;
+if(url.substr(-1)!=='/')
+    url+='/';
+url+='api';
 
 export const getUserData = () => axios.get(`${url}/users/profile/`, { withCredentials: true });
 
