@@ -1,0 +1,25 @@
+.train-form-results {
+  width: 90%;
+}
+
+.train-form-results .ant-form-item {
+  margin-bottom: 4px;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+.train-form-results .ant-form-item-label {
+  padding-bottom: 0px;
+  text-align: left !important;
+}
+
+.train-form-results .ant-select-selector,
+.train-form-results .ant-picker {
+  max-width: 200px;
+  width: 100%;
+}
+
+@media all and (max-width: 501px) {
+  .train-form-results .ant-form-item {
+    display: flex;
+  }
+}

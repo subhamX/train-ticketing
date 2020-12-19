@@ -29,7 +29,7 @@ function TicketSearch() {
 
 export default TicketSearch;
 
-function extractStationCode(name:string){
+export function extractStationCode(name:string){
   let code:any=(name.match(/(\(\w+\))/)as any) ;
   if(code==null){
     return name;

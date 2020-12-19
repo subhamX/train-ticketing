@@ -35,3 +35,8 @@
 .ant-descriptions-item-label{
   font-weight: 600;
 }
+
+.train-desc-wrapper .ant-descriptions-item-content,
+.train-desc-wrapper .ant-descriptions-item-label {
+  padding: 8px;
+}

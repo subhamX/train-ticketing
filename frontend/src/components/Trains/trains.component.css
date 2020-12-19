@@ -44,8 +44,8 @@ Divider {
 .collapse_card_wrapper .ant-collapse-item {
   border: none !important;
 }
-.collapse_card_wrapper .train_instance_card .ant-descriptions-item-content,
-.collapse_card_wrapper .train_instance_card .ant-descriptions-item-label {
+.collapse_card_wrapper .ant-descriptions-item-content,
+.collapse_card_wrapper .ant-descriptions-item-label {
   padding: 8px;
 }
 .collapse_card_wrapper .train_instance_card  .ant-descriptions-item-content,

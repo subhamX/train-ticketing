@@ -1,63 +1,184 @@
 import React, { useEffect, useState } from "react";
-import {  Button, Alert, Spin,  Col, message } from "antd";
+import {
+  Button,
+  Alert,
+  Spin,
+  Col,
+  message,
+  Form,
+  DatePicker,
+} from "antd";
 import moment from "moment";
 import { useHistory, useLocation } from "react-router-dom";
-
+import { extractStationCode } from "../ticketSearch/ticketSearch.component";
 import Head from "../../Head/head.component";
 import "./ticketSearchResult.component.css";
 import { queryTrainsInstances } from "../../../services/api";
 import momentDurationFormatSetup from "moment-duration-format";
 import { TrainDetails } from "../book/book.component";
+import { AutoInput } from "../AutoInput";
+import { useDispatch, useSelector } from "react-redux";
+import { getCities } from "../../../services/actions/tickets";
 
 momentDurationFormatSetup(moment as any);
 
 function AllTrains() {
   const [isLoading, setisLoading] = useState(true);
   const [trains, setTrains] = useState([]);
+  const [oldFormValue, setoldFormValue] = useState({});
+  const cities = useSelector((state: any) => state.ticketsReducer.cities);
+  const dispatch = useDispatch();
 
   const location = useLocation();
 
   useEffect(() => {
     let params = new URLSearchParams(location.search);
-
+    dispatch(getCities());
     let source = params.get("source") ?? "";
     let dest = params.get("dest") ?? "";
     let date = params.get("date") ?? "";
 
+    // TODO: Check if date etc all are in correct format
     if (source === "" || dest === "" || date === "") {
       message.error(
         `Invalid source city or destination city or date of journey`,
-        4
+        2
       );
-      setTimeout(() => {
-        history.push("/tickets/search/");
-      }, 2500);
     } else {
+      form.setFieldsValue({
+        source,
+        destination: dest,
+        journey_date: moment(date, ["DD-MM-YYYY", "DD/MM/YYYY"]),
+      });
       // get data
-      queryTrainsInstances({ source, destination: dest, date })
-        .then((e) => {
-          if (e.data.error === true) {
-            throw Error(e.data.message);
-          }
-          setTrains(e.data.data);
-          setisLoading(false);
-        })
-        .catch((err) => {
-          message.error(err.message, 4);
-          setTimeout(() => {
-            history.push("/tickets/search/");
-          }, 2500);
-        });
+      getData(source, dest, date);
     }
-  }, []);
+  }, [location.search]);
 
-  const history = useHistory();
+  const getData = (source: string, destination: string, date: string) => {
+    setoldFormValue({ source, destination, date });
+    setisLoading(true);
+    setTrains([]);
+    queryTrainsInstances({ source, destination, date })
+      .then((e) => {
+        if (e.data.error === true) {
+          throw Error(e.data.message);
+        }
+        setTrains(e.data.data);
+        setisLoading(false);
+      })
+      .catch((err) => {
+        message.error(err.message, 2);
+        setisLoading(false);
+      });
+  };
+  const history=useHistory();
+  const onChangeHandler = (key: any, value: any) => {
+    let newObject: any = {};
+    newObject[key] = value;
+    form.setFieldsValue(newObject);
+  };
+  const [form] = Form.useForm();
+  const handleSubmitWrapper = async (payload: {
+    source: string;
+    destination: string;
+    journey_date: any;
+  }) => {
+    if (payload === oldFormValue) {
+      message.error("Please change the fields", 2);
+    } else {
+      if (payload.source === payload.destination) {
+        message.error("Source and Destination cannot be same", 2);
+        return;
+      }
+      let date = moment(payload.journey_date).format("DD-MM-YYYY");
+      payload.journey_date = date;
 
+      history.push(
+        `/tickets/listing?source=${extractStationCode(
+          payload.source
+        )}&dest=${extractStationCode(payload.destination)}&date=${
+          payload.journey_date
+        }`
+      );
+    }
+  };
   return (
     <div className="trains">
       <Head />
       <div className="train-list-wrapper">
         <h1>Train Results</h1>
+        <Form
+          form={form}
+          layout={"horizontal"}
+          className="train-form-results"
+          onFinish={handleSubmitWrapper}
+        >
+          <Form.Item
+            label="Source"
+            name="source"
+            rules={[
+              {
+                required: true,
+                message: "Please select a valid source city!",
+              },
+            ]}
+          >
+            <AutoInput
+              initialVal={form.getFieldValue("source")}
+              data={cities}
+              placeholder="New Delhi"
+              classNme="source"
+              onChangeHandler={onChangeHandler}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Destination"
+            name="destination"
+            rules={[
+              {
+                required: true,
+                message: "Please select a valid destination city!",
+              },
+            ]}
+          >
+            <AutoInput
+              initialVal={form.getFieldValue("destination")}
+              data={cities}
+              placeholder="Rupnagar"
+              classNme="destination"
+              onChangeHandler={onChangeHandler}
+            />
+          </Form.Item>
+          <div className="date-input">
+            <Form.Item
+              label="Journey Date:"
+              className="date-input"
+              name="journey_date"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select a journey date",
+                },
+              ]}
+            >
+              <DatePicker
+                className="journey_date"
+                disabledDate={(current) =>
+                  current && current < moment().subtract(1, "day")
+                }
+              />
+            </Form.Item>
+          </div>
+          <br />
+          <Form.Item>
+            <Button loading={isLoading} htmlType="submit" type="primary">
+              Search For Trains
+            </Button>
+          </Form.Item>
+
+          <br />
+        </Form>
         {isLoading ? (
           <Spin tip="Loading Trains"></Spin>
         ) : (
@@ -84,7 +205,6 @@ function AllTrains() {
 
 export default AllTrains;
 
-
 function TrainListItem(props: any) {
   const history = useHistory();
 
@@ -95,7 +215,7 @@ function TrainListItem(props: any) {
           <Button
             type="primary"
             onClick={() => {
-              message.loading('Redirecting to bookings portal', 0.5)
+              message.loading("Redirecting to bookings portal", 0.5);
               setTimeout(() => {
                 history.push({
                   pathname: "/tickets/book/",
