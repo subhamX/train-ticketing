@@ -20,6 +20,7 @@ import AdminHome from "./components/Admin/Home";
 import AddNewBookingInstance from "./components/Admin/AddNewBookingInstance/addNewBookingInstance.component";
 import AddNewCoach from "./components/Admin/AddCoach/addCoach.component";
 import Error from "./components/Error/error.component";
+import About from "./components/About/About.component";
 
 function App() {
   const dispatch = useDispatch();
@@ -82,6 +83,7 @@ function App() {
         <PrivateRoute exact path="/tickets/book/">
           <BookTickets />
         </PrivateRoute>
+        <Route path="/about/" component={About} />
         <Route path="/tickets/listing/">
           <TicketSearchResults />
         </Route>

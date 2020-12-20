@@ -1,6 +1,5 @@
 import Express, { Request, Response } from 'express';
 import cookie_parser from 'cookie-parser';
-import bodyParser from 'body-parser';
 import session from 'express-session';
 import trainRoutes from './routes/trains';
 import authRoutes from './auth/index';

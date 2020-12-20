@@ -6,8 +6,7 @@ import { logoutUser } from "../../services/actions/auth";
 import "./head.component.css";
 import { Layout } from "antd";
 import { UnorderedListOutlined } from "@ant-design/icons";
-import logo from '../../assets/logo/logo.png';
-
+import logo from "../../assets/logo/logo.png";
 
 const { Header } = Layout;
 
@@ -32,6 +31,8 @@ function Head() {
         return "admin";
       case "/tickets/search/":
         return "tickets_search";
+      case "/about/":
+        return "about";
       default:
         return "1";
     }
@@ -52,15 +53,15 @@ function Head() {
     <div className="header-wrapper">
       <Header>
         <Link to="/">
-          {/* <h3 className="logo">Railways</h3> */}
-          <img src={logo} className="logo" alt='Railways' />
+          <img src={logo} className="logo" alt="Railways" />
         </Link>
         {md ? (
           <NavMenu defaultKey={defaultKey} md={md} />
         ) : (
-          <Button className="barsMenu" type="primary" onClick={showDrawer}>
-            <UnorderedListOutlined />
-          </Button>
+          <UnorderedListOutlined
+            style={{ fontSize: "20px" }}
+            onClick={showDrawer}
+          />
         )}
       </Header>
       <Drawer
@@ -93,7 +94,9 @@ function NavMenu({ defaultKey, md }: any) {
       <Menu.Item key="tickets_search">
         <Link to="/tickets/search/">Book Tickets</Link>
       </Menu.Item>
-
+      <Menu.Item key="about">
+        <Link to="/about/">About</Link>
+      </Menu.Item>
       {user && user.is_admin ? (
         <>
           <Menu.Item key="admin">
